@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import SocketContext from '../other/SocketContext'
-import Post from "./post"
+import SocketContext from '../other/SocketContext';
+import Post from "./post";
+import { Typography } from '@material-ui/core';
 
 class Feed extends Component {
   constructor() {
@@ -35,16 +36,18 @@ class Feed extends Component {
     
     if(response.length === 0 || response == null || typeof response != "object" ){
       showposts = (
-        <div class="container">
-          <h1 class="mt-5">No Posts :/</h1>
-          <p class="lead">There are no posts, yet! Maybe you should enter your thoughts here...</p>
+        <div>
+          <Typography variant="h4">No Posts :/</Typography>
+          <Typography variant="subtitle1">There are no posts, yet! Maybe you should enter your thoughts here...</Typography>
         </div>
       )
     } else {
       showposts = (
-        response.map((data)=> (
-          <Post post={data}></Post>
-      )))
+        <div>
+          {response.map((data, i)=> (
+            <Post key={i} post={data}></Post>
+          ))}
+      </div>)
     }
         
     return showposts;

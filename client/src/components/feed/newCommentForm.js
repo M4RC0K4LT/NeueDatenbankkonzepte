@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import SocketContext from '../other/SocketContext'
+import SocketContext from '../other/SocketContext';
+import { TextField, Button } from '@material-ui/core';
+
 
 class NewCommentForm extends Component {
   constructor() {
@@ -24,13 +26,20 @@ class NewCommentForm extends Component {
   render() {
     return (
         <form>
-            <div class="form-group">
-                <label class="sr-only" for="postContent">Write down your thoughts...</label>
-                <textarea class="form-control" id="postContent" placeholder="Write down your thoughts..."
-                        rows="3" value={this.state.newpost} onChange={this.handleChange}></textarea>
-            </div>
+            <TextField
+              id="outlined-multiline-static"
+              multiline
+              rows="4"
+              defaultValue="Default Value"
+              variant="outlined"
+              placeholder="Write down your thoughts..."
+              value={this.state.newpost} 
+              fullWidth
+              onChange={this.handleChange}
+              margin="normal">
+            </TextField>
 
-            <button class="btn btn-primary" onClick={this.handleSubmit}>Submit</button>
+            <Button variant="contained" color="primary" onClick={this.handleSubmit}>Submit</Button>
         </form>       
 
     );

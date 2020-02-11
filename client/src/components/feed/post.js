@@ -1,19 +1,17 @@
 import React, { Component } from "react";
+import { Card, CardContent } from '@material-ui/core';
 
 class Post extends Component {
-  constructor() {
-    super();
-  }
 
   render() {
     const { post } = this.props;
 
     return (
-        <div class="card post" style={{ marginBottom: ".5rem" }}>
-            <div class="card-body">
+        <Card variant="outlined" style={{ marginBottom: ".5rem" }}>
+            <CardContent>
                 {post.content}
-            </div>
-        </div> 
+            </CardContent>
+        </Card> 
     );
   }
 }
