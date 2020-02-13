@@ -9,10 +9,12 @@ individualPath = "gruppe-kann-nix-34-";
 const db = require('./database/redis');
 
 const userapi = require("./routes/usersapi");
+const postsapi = require('./routes/postsapi');
 
 
 app.use(bodyParser.json());
 app.use("/user", userapi);
+app.use("/post", postsapi);
 
 app.get('/', (req, res) => {
     res.send('It works!');
