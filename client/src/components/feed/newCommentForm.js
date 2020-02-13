@@ -20,7 +20,7 @@ class NewCommentForm extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    this.socket.emit('post', JSON.stringify({content: this.state.newpost}));
+    this.socket.emit('post', JSON.stringify({user: 'CurrentUser', content: this.state.newpost, posted: new Date().toLocaleString(), likes: 0}));
   }
 
   render() {

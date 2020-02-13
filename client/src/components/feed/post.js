@@ -9,7 +9,10 @@ class Post extends Component {
     return (
         <Card variant="outlined" style={{ marginBottom: ".5rem" }}>
             <CardContent>
-                {post.content}
+                User: {post.user}<br></br>
+                Content: {post.content}<br></br> 
+                Datum: {post.posted}<br></br>
+                Likes: {post.likes}
             </CardContent>
         </Card> 
     );

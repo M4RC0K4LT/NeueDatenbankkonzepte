@@ -17,10 +17,41 @@ class Index extends React.Component{
             </Switch>
         </Container>
     )
+
+    let user = (
+        <Container style={{ marginTop: "5rem" }}>
+            <Switch>
+                <Route exact path="/" component={GlobalFeed} />
+                <Route path="/feed" component={GlobalFeed} />
+            </Switch>
+        </Container>
+    )
+
+    let posted = (
+        <Container style={{ marginTop: "5rem" }}>
+            <Switch>
+                <Route exact path="/" component={GlobalFeed} />
+                <Route path="/feed" component={GlobalFeed} />
+            </Switch>
+        </Container>
+    )
+
+    let likes = (
+        <Container style={{ marginTop: "5rem" }}>
+            <Switch>
+                <Route exact path="/" component={GlobalFeed} />
+                <Route path="/feed" component={GlobalFeed} />
+            </Switch>
+        </Container>
+    )
+
     return (
         <Router>
             <ResponsiveDrawer
-                content={content}>
+                user={user}
+                content={content}
+                posted={posted}
+                likes={likes}>
             </ResponsiveDrawer>           
         </Router>
     );

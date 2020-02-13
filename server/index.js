@@ -18,7 +18,7 @@ io.on('connection', socket => {
     console.log('a user connected');
 
     // After initial connection, send all existing posts to the user
-    redisClient.lrange('101-wwi-tweety-posts', 0, -1, (err, postJsonStrings) => {
+    redisClient.lrange('101-wwi-tweety-posts-test', 0, -1, (err, postJsonStrings) => {
         if (err) {
             console.error(err);
             return;
@@ -29,12 +29,12 @@ io.on('connection', socket => {
         socket.emit('previous posts', JSON.stringify(objects));
     });
 
+    // Wait for post event
     socket.on('post', postAsJson => {
         const post = JSON.parse(postAsJson);
         console.log(post);
-
         // Save post in redis
-        redisClient.rpush('101-wwi-tweety-posts', JSON.stringify(post));
+        redisClient.rpush('101-wwi-tweety-posts-test', JSON.stringify(post));
 
         // Send Post to everyone
         io.emit('post', JSON.stringify(post));
