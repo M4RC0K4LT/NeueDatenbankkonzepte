@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link  } from 'react-router-dom'
 import { Typography, AppBar, CssBaseline, Drawer, Hidden, IconButton, Toolbar, useTheme, withStyles, List, ListItem, ListItemText, ListItemIcon } from '@material-ui/core';
-import { MenuOutlined as MenuOutlinedIcon, Clear as ClearIcon } from '@material-ui/icons';
-import useStyles from './components/other/useStyles';
+import { MenuOutlined as MenuOutlinedIcon } from '@material-ui/icons';
+import useStyles from './useStyles';
 
 
 /** Responsible for suitable page-navigation regarding device width */
@@ -61,13 +61,13 @@ function ResponsiveDrawer(props) {
             >
                 <List>
                     <ListItem button key={1} component={Link} to={"/feed"} >
-                        <ListItemIcon style={{ color: "#fff" }}></ListItemIcon>
+                        {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                         <ListItemText primary={"Feed"} />
                     </ListItem>
                 </List>
                 <List>
                     <ListItem button key={2} component={Link} to={"/profile"} >
-                        <ListItemIcon style={{ color: "#fff" }}></ListItemIcon>
+                        {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                         <ListItemText primary={"Profil"} />
                     </ListItem>
                 </List>

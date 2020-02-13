@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import SocketContext from '../other/SocketContext';
-import Post from "./post";
+import { Post, SocketContext } from "../exports";
 import { Typography } from '@material-ui/core';
 
 class Feed extends Component {
@@ -11,6 +10,11 @@ class Feed extends Component {
       newpost: "",
     };
     this.socket = SocketContext;
+    this.onLike = this.onLike.bind(this);
+  }
+
+  onLike(id){
+    console.log("test");
   }
 
   componentDidMount() {
@@ -42,11 +46,16 @@ class Feed extends Component {
         </div>
       )
     } else {
+
       showposts = (
         <div>
           {response.map((data, i)=> (
-            <Post key={i} post={data}></Post>
-          ))}
+            <Post 
+              key={i}
+              post={data}
+              onLike={this.onLike}>
+            </Post>         
+        ))}
       </div>)
     }
         

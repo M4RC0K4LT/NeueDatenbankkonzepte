@@ -1,8 +1,8 @@
 import React from 'react';
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom'
 import ReactDOM from 'react-dom'
-import GlobalFeed from "./GlobalFeed"
-import ResponsiveDrawer from './responsiveDrawer'
+import GlobalFeed from "./main/GlobalFeed"
+import { ResponsiveDrawer } from './components/exports'
 import { Container } from '@material-ui/core';
 
 class Index extends React.Component{

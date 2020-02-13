@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import Feed from "./components/feed/feed";
-import NewCommentForm from "./components/feed/newCommentForm";
+import { Feed, NewCommentForm } from '../components/exports';
 import { Box } from '@material-ui/core';
 
 class GlobalFeed extends Component {

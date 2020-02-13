@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import SocketContext from '../other/SocketContext';
+import { SocketContext } from '../exports';
 import { TextField, Button } from '@material-ui/core';
 
 
@@ -8,6 +8,7 @@ class NewCommentForm extends Component {
     super();
     this.state = {
       newpost: "",
+      error: false,
     };
     this.socket = SocketContext;
     this.handleChange = this.handleChange.bind(this);
@@ -20,6 +21,11 @@ class NewCommentForm extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    if(this.state.newpost.length == 0){
+      this.setState({ error: true });
+      return;
+    }
+    this.setState({ error: false, newpost: "" })
     this.socket.emit('post', JSON.stringify({content: this.state.newpost}));
   }
 
@@ -29,14 +35,15 @@ class NewCommentForm extends Component {
             <TextField
               id="outlined-multiline-static"
               multiline
+              error={this.state.error}
               rows="4"
-              defaultValue="Default Value"
               variant="outlined"
               placeholder="Write down your thoughts..."
               value={this.state.newpost} 
               fullWidth
               onChange={this.handleChange}
-              margin="normal">
+              margin="normal"
+              autoFocus>
             </TextField>
 
             <Button variant="contained" color="primary" onClick={this.handleSubmit}>Submit</Button>
