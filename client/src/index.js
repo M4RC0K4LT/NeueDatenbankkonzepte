@@ -2,8 +2,12 @@ import React from 'react';
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom'
 import ReactDOM from 'react-dom'
 import GlobalFeed from "./main/GlobalFeed"
-import { ResponsiveDrawer } from './components/exports'
+import { ResponsiveDrawer, PrivateRoute } from './components/exports'
 import { Container } from '@material-ui/core';
+import Login from './main/login';
+import Register from './main/register';
+
+window.$apiroute = "http://localhost:3000";
 
 class Index extends React.Component{
 
@@ -12,35 +16,10 @@ class Index extends React.Component{
     let content = (
         <Container style={{ marginTop: "5rem" }}>
             <Switch>
-                <Route exact path="/" component={GlobalFeed} />
-                <Route path="/feed" component={GlobalFeed} />
-            </Switch>
-        </Container>
-    )
-
-    let user = (
-        <Container style={{ marginTop: "5rem" }}>
-            <Switch>
-                <Route exact path="/" component={GlobalFeed} />
-                <Route path="/feed" component={GlobalFeed} />
-            </Switch>
-        </Container>
-    )
-
-    let posted = (
-        <Container style={{ marginTop: "5rem" }}>
-            <Switch>
-                <Route exact path="/" component={GlobalFeed} />
-                <Route path="/feed" component={GlobalFeed} />
-            </Switch>
-        </Container>
-    )
-
-    let likes = (
-        <Container style={{ marginTop: "5rem" }}>
-            <Switch>
-                <Route exact path="/" component={GlobalFeed} />
-                <Route path="/feed" component={GlobalFeed} />
+                <Route exact path="/login" component={Login} />
+                <Route exact path="/register" component={Register} />
+                <PrivateRoute exact path="/" component={GlobalFeed} />
+                <PrivateRoute exact path="/feed" component={GlobalFeed} />
             </Switch>
         </Container>
     )

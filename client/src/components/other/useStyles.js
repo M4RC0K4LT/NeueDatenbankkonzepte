@@ -40,6 +40,16 @@ const useStyles = theme => ({
     subtitle: {
       margin: "5px",
       marginLeft: "25px",
+    },
+    submit: {
+      margin: theme.spacing(3, 0, 2),
+    },
+    avatar: {
+      marginBottom: theme.spacing(2),
+      backgroundColor: theme.palette.secondary.main,
+    },
+    logoutButton: {
+      marginLeft: "150px"
     }
     
 });

@@ -8,6 +8,7 @@ class Feed extends Component {
     this.state = {
       response: [],
       newpost: "",
+      error: null,
     };
     this.socket = SocketContext;
     this.onLike = this.onLike.bind(this);
@@ -32,10 +33,14 @@ class Feed extends Component {
       previous.unshift(newresponse)
       this.setState({ response: previous });
     }));
+
+    this.socket.on('error', (err) => {
+      this.setState({ error: "-- "+err+" --" });
+    });
   }
 
   render() {
-    const { response } = this.state;
+    const { response, error } = this.state;
     let showposts = null;
     
     if(response.length === 0 || response == null || typeof response != "object" ){
@@ -43,6 +48,7 @@ class Feed extends Component {
         <div>
           <Typography variant="h4">No Posts :/</Typography>
           <Typography variant="subtitle1">There are no posts, yet! Maybe you should enter your thoughts here...</Typography>
+          <Typography variant="h6">{error}</Typography>
         </div>
       )
     } else {

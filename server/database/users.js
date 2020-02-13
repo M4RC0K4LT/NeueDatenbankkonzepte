@@ -128,6 +128,7 @@ module.exports = {
                             if (err) {
                                 return reject(err);
                             }
+                            console.log(result)
                             var correct = bcrypt.compareSync(password, result.password);
                             if (correct == true) {
                                 const token = jwt.sign({ "id": id, "name": result.name }, JWT_KEY);
