@@ -10,6 +10,9 @@ const db = require('./database/redis');
 
 const userapi = require("./routes/usersapi");
 
+const cors = require('cors')
+app.use(cors());
+app.options('*', cors())
 
 app.use(bodyParser.json());
 app.use("/user", userapi);
@@ -17,6 +20,10 @@ app.use("/user", userapi);
 app.get('/', (req, res) => {
     res.send('It works!');
 });
+
+const socketauth = require("./routes/auth");
+
+io.use(socketauth)
 
 io.on('connection', socket => {
 

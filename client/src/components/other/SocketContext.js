@@ -1,4 +1,9 @@
 import socketIOClient from "socket.io-client";
-const socket = socketIOClient("http://localhost:3000")
+
+var token = sessionStorage.getItem("authToken");
+
+const socket = socketIOClient("http://localhost:3000", {
+    query: {token: token}
+});
 
 export default socket;
