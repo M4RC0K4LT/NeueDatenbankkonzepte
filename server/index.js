@@ -1,24 +1,29 @@
 const app = require('express')();
 const http = require('http').createServer(app);
+const bodyParser = require('body-parser');
 const io = require('socket.io')(http);
-const redis = require('redis');
+require("dotenv").config()
 
-// Create new redis database client -> if you need other connection options, please specify here
-const redisClient = redis.createClient({
-	url: "rediss://default:gai689ypykqx0fjj@dhbw-wwi-ndbk-do-user-883655-0.db.ondigitalocean.com:25061",
-	tls: {},
-	
-});
+individualPath = "gruppe-kann-nix-34-";
+
+const db = require('./database/redis');
+
+const userapi = require("./routes/usersapi");
+
+
+app.use(bodyParser.json());
+app.use("/user", userapi);
 
 app.get('/', (req, res) => {
     res.send('It works!');
 });
 
 io.on('connection', socket => {
-    console.log('a user connected');
+
+    console.log(`Socket ${socket.id} connected.`);
 
     // After initial connection, send all existing posts to the user
-    redisClient.lrange('101-wwi-tweety-posts-test', 0, -1, (err, postJsonStrings) => {
+    db.lrange('121-wwi-tweety-posts', 0, -1, (err, postJsonStrings) => {
         if (err) {
             console.error(err);
             return;
@@ -34,14 +39,14 @@ io.on('connection', socket => {
         const post = JSON.parse(postAsJson);
         console.log(post);
         // Save post in redis
-        redisClient.rpush('101-wwi-tweety-posts-test', JSON.stringify(post));
+        db.rpush('121-wwi-tweety-posts', JSON.stringify(post));
 
         // Send Post to everyone
         io.emit('post', JSON.stringify(post));
     });
 
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
+    socket.on('disconnect', (reason) => {
+        console.log(`Socket ${socket.id} disconnected -> ${reason}.`);
     });
 });
 
