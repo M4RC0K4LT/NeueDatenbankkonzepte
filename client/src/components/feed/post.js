@@ -42,6 +42,9 @@ class Post extends Component {
                 })}
             </CardContent>
             <CardActions>
+                User: {post.user}<br></br> 
+                Datum: {post.posted}<br></br>
+                Likes: {post.likes}
               <IconButton style={{ marginLeft: "auto" }} onClick={this.handleLike(post.id)}>
                 <FavoriteIcon />
               </IconButton>
