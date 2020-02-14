@@ -127,15 +127,17 @@ module.exports = {
                         db.hgetall(individualPath + 'user:' + id, function (err, result) {
                             if (err) {
                                 return reject(err);
-                            }
+                            } 
                             console.log(result)
-                            var correct = bcrypt.compareSync(password, result.password);
-                            if (correct == true) {
-                                const token = jwt.sign({ "id": id, "name": result.username }, JWT_KEY);
-                                return resolve({ "token": token });
-                            } else {
-                                return reject({ "error": "Ungültige Eingaben" })
-                            }
+                            if(result != null){
+                              var correct = bcrypt.compareSync(password, result.password);
+                              if (correct == true) {
+                                  const token = jwt.sign({ "id": id, "name": result.username }, JWT_KEY);
+                                  return resolve({ "token": token });
+                              } else {
+                                  return reject({ "error": "Ungültige Eingaben" })
+                              }
+                            }  
                         });
                     }
                 }

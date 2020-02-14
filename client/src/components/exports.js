@@ -9,6 +9,7 @@ import RegisterFields from './user/formComponents/registerfields';
 import LoginFields from './user/formComponents/loginfields';
 import LoginUserForm from './user/loginUserForm';
 import RegisterUserForm from './user/registerUserForm';
+import ProfileFeed from './user/profile_feed';
 
 /** Central components-ExportFile */
 export {
@@ -23,4 +24,5 @@ export {
     LoginFields,
     LoginUserForm,
     RegisterUserForm,
+    ProfileFeed,
 }

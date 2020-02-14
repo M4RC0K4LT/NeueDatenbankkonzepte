@@ -21,6 +21,7 @@ class Index extends React.Component{
                 <Route exact path="/register" component={Register} />
                 <PrivateRoute exact path="/" component={GlobalFeed} />
                 <PrivateRoute exact path="/feed" component={GlobalFeed} />
+                <PrivateRoute path="/profile/:id" component={Profile} />
                 <PrivateRoute exact path="/profile" component={Profile} />
             </Switch>
         </Container>
@@ -29,9 +30,7 @@ class Index extends React.Component{
     return (
         <Router>
             <ResponsiveDrawer
-                /*user={user}*/
-                content={content}
-                /*likes={likes}*/>
+                content={content}>
             </ResponsiveDrawer>           
         </Router>
     );

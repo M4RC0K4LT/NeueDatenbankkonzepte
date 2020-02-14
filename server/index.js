@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const io = require('socket.io')(http);
 require("dotenv").config()
 
-individualPath = "gruppe-kann-nix-36-";
+individualPath = "gruppe-kann-nix-38-";
 
 const db = require('./database/redis');
 
@@ -34,18 +34,40 @@ io.use(socketauth)
 io.on('connection', socket => {
 
     console.log(`User ${socket.decoded.name} connected to main socket.`);
-    posts.getAll(socket);
+    
 
     // Wait for post event
-    socket.on('new post', async postAsJson => {
+    socket.on('new globalpost', async postAsJson => {
         const post = JSON.parse(postAsJson);
 
         // Save post in redis
         await posts.create(post);
 
         // Send Post to everyone
-        io.emit('post', JSON.stringify(post));
+        io.sockets.in("global").emit('post', JSON.stringify(post));
+        io.sockets.in(socket.decoded.id).emit('post', JSON.stringify(post));
     });
+
+    socket.on('leave', function(room){
+        socket.leave(room)
+        console.log(socket.decoded.name + " left room: " + room)
+    })
+    
+    socket.on('join', function(room){
+        socket.join(room);
+
+        if(room === "global"){
+            posts.getAll(socket);
+        }
+
+        else{
+            posts.getByUser(room, socket)
+        }
+
+        console.log(socket.decoded.name + " joined room: " + room)
+    })
+
+
 
     socket.on('disconnect', (reason) => {
         console.log(`User ${socket.decoded.name} has left the main socket. -> ${reason}.`);

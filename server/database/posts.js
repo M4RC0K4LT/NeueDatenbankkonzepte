@@ -8,7 +8,27 @@ module.exports = {
             if (err) {
                 return (err);
             } else { 
-                for(data in postJsonStrings){
+                for(data of postJsonStrings){
+                    db.hgetall(individualPath + "post:" + data, function(err, res){
+                        if(err){
+                            return err;
+                        }
+                        if(res != null){
+                            socket.emit('post', JSON.stringify(res));
+                        }
+                    });
+                }          
+            }
+        })
+    },
+
+    getByUser(id, socket){
+        db.zrange(individualPath + 'postByUserID:' + id, 0, -1, function(err, postJsons){
+            if (err) {
+                return (err);
+            } else { 
+                for(data of postJsons){
+                    
                     db.hgetall(individualPath + "post:" + data, function(err, res){
                         if(err){
                             return err;
@@ -28,7 +48,6 @@ module.exports = {
                 if (err) {
                     return reject(err);
                 } else {
-                    console.log(uniquePostID)
                     db.hmset(individualPath + 'post:' + uniquePostID, 'username', jsonObject.username, 'timestamp', jsonObject.timestamp, 'content', jsonObject.content, function (err, res) {
                         if (err) {
                             return reject(err);

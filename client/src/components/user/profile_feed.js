@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Post, SocketContext } from "../exports";
 import { Typography } from '@material-ui/core';
 
-class Feed extends Component {
+class ProfileFeed extends Component {
   constructor() {
     super();
     this.state = {
@@ -20,7 +20,9 @@ class Feed extends Component {
 
   componentDidMount() {
     
-    this.socket.emit("join", "global")
+    var userid = this.props.id;
+
+    this.socket.emit("join", userid)
 
 
     this.socket.on('post', (rawPost => {
@@ -36,7 +38,8 @@ class Feed extends Component {
   }
 
   componentWillUnmount(){
-    this.socket.emit("leave", "global")
+    var userid = this.props.id;
+    this.socket.emit("leave", userid)
   }
 
   render() {
@@ -47,7 +50,7 @@ class Feed extends Component {
       showposts = (
         <div>
           <Typography variant="h4">No Posts :/</Typography>
-          <Typography variant="subtitle1">There are no posts, yet! Maybe you should enter your thoughts here...</Typography>
+          <Typography variant="subtitle1">This user has not posted yes!</Typography>
           <Typography variant="h6">{error}</Typography>
         </div>
       )
@@ -69,4 +72,4 @@ class Feed extends Component {
   }
 }
 
-export default Feed;
+export default ProfileFeed;
