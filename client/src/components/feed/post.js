@@ -38,13 +38,12 @@ class Post extends Component {
                                 </Typography>
                             )
                         }
-
                     })}
                 </CardContent>
                 <CardActions>
-                    {/*User: {post.user}<br></br>
+                    {/*User: {post.user}<br></br>*/}
                     Datum: {post.posted}<br></br>
-                    Likes: {post.likes}*/}
+                    Likes: {post.likes}
                     <IconButton style={{ marginLeft: "auto" }} onClick={this.handleLike(post.id)}>
                         <FavoriteIcon />
                     </IconButton>

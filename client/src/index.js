@@ -29,8 +29,7 @@ class Index extends React.Component{
             <ResponsiveDrawer
                 /*user={user}*/
                 content={content}
-                /*posted={posted}
-                likes={likes}*/>
+                /*likes={likes}*/>
             </ResponsiveDrawer>           
         </Router>
     );

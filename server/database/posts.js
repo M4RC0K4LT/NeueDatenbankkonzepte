@@ -2,6 +2,25 @@
 const db = require('./redis');
 
 module.exports = {
+
+    getAll: () => {
+        return new Promise((resolve, reject) => {
+            db.hmgetall(individualPath + 'post', function (err, result) {
+                if (err) {
+                    return reject(err);
+                } else {
+                    if (result == null) {
+                        return reject({"error": "Tweets nicht gefunden"});
+                    } else {
+                        return resolve;
+                    }
+                }
+            })
+        })
+    },
+
+
+
     create: jsonObject => {
         return new Promise((resolve, reject) => {
             db.hmget(individualPath + 'post', jsonObject.id, function (err, res) {
@@ -23,7 +42,7 @@ module.exports = {
                                     if (err) {
                                         return reject(err);
                                     }
-                                    dh.hgetall(individualPath + 'post:' + uniquePostID, function (err, res) {
+                                    db.hgetall(individualPath + 'post:' + uniquePostID, function (err, res) {
                                         if (err) {
                                             return reject(err);
                                         }
