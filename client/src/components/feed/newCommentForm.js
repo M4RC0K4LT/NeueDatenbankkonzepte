@@ -35,7 +35,7 @@ class NewCommentForm extends Component {
         var username = decoded.name;
         var postDate = Date.now();
 
-        this.socket.emit('new post', JSON.stringify({ content: this.state.newpost, timestamp: postDate, username: username, userid: userid }));
+        this.socket.emit('new globalpost', JSON.stringify({ content: this.state.newpost, timestamp: postDate, username: username, userid: userid }));
         this.setState({ error: false, newpost: "" });
     }
 

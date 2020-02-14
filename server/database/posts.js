@@ -48,7 +48,7 @@ module.exports = {
                 if (err) {
                     return reject(err);
                 } else {
-                    db.hmset(individualPath + 'post:' + uniquePostID, 'username', jsonObject.username, 'timestamp', jsonObject.timestamp, 'content', jsonObject.content, function (err, res) {
+                    db.hmset(individualPath + 'post:' + uniquePostID, 'username', jsonObject.username, 'timestamp', jsonObject.timestamp, 'content', jsonObject.content, 'userid', jsonObject.userid, function (err, res) {
                         if (err) {
                             return reject(err);
                         }

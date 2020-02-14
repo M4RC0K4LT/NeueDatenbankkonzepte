@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const io = require('socket.io')(http);
 require("dotenv").config()
 
-individualPath = "gruppe-kann-nix-38-";
+individualPath = "gruppe-kann-nix-40-";
 
 const db = require('./database/redis');
 

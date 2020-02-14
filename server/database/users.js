@@ -111,8 +111,8 @@ module.exports = {
      * Login user by mail and password.
      * @param {string} name - Login mailadress.
      * @param {string} password - Unhashed password.
-     * @return {JSON} SessionToken, UserID. */
-
+     * @return {JSON} SessionToken, UserID.
+     */
     login: (name, password) => {
         return new Promise((resolve, reject) => {
             db.hmget(individualPath + 'user', name, function (err, result) {
@@ -127,90 +127,88 @@ module.exports = {
                         db.hgetall(individualPath + 'user:' + id, function (err, result) {
                             if (err) {
                                 return reject(err);
-                            } 
+                            }
                             console.log(result)
-                            if(result != null){
-                              var correct = bcrypt.compareSync(password, result.password);
-                              if (correct == true) {
-                                  const token = jwt.sign({ "id": id, "name": result.username }, JWT_KEY);
-                                  return resolve({ "token": token });
-                              } else {
-                                  return reject({ "error": "Ungültige Eingaben" })
-                              }
-                            }  
+                            if (result != null) {
+                                var correct = bcrypt.compareSync(password, result.password);
+                                if (correct == true) {
+                                    const token = jwt.sign({ "id": id, "name": result.username }, JWT_KEY);
+                                    return resolve({ "token": token });
+                                } else {
+                                    return reject({ "error": "Ungültige Eingaben" })
+                                }
+                            }
                         });
                     }
                 }
-                /**var correct = bcrypt.compareSync(password, result.password);
-                if (correct == true) {
-                  userid = result.user_id;
-                  const token = jwt.sign(userid, JWT_KEY);
-                  db.run(
-              
-                    `UPDATE users SET user_tokens = $token WHERE user_id = $id`, 
-                    {
-                      $token: token,
-                      $id: userid
-                    },
-                    function (err) {
-                      if (err) {
-                        return reject(err);
-                      }
-                      resolve({"token": token, "userid": userid});
-                    }
-                  );
-    
-                } else {
-                  reject({"error": "Ungültige Eingaben"});
-                }
-                }*/
             })
         })
     },
 
     /**
-     * Logout user by token.
-     * @param {string} token - User SessionToken.
-     * @return {JSON} TODO?
-    logout: token => {
-      var tokenverify = true;
-      var tokenvalid = true;
-      let user_id = null;
-      jwt.verify(token, JWT_KEY, async (err, userid) => {
-        if(err){
-            tokenverify = false;
-        }
-        user_id = userid;
-        const user = await module.exports.findById(parseInt(userid));
-        if(user.user_tokens != token){
-            tokenvalid = false;
-        }
-        
-      });
-      return new Promise((resolve, reject) => {  
-        if(tokenverify == false){
-          reject({"error": "Fehler bei der Tokenverifizierung"})
-        }      
-        if(tokenvalid == false){
-          reject({"error": "Falscher Token für Benutzer oder nicht angemeldet!"})
-        }  
-        db.run(         
-          `UPDATE users SET user_tokens = null WHERE user_id = $id`, 
-          {
-            $id: user_id
-          },
-          function (err) {
-            if (err) {
-              reject(err);
-  
-            }
-            resolve();
-          }
-        )
-      });
+     * Follow another user
+     * @param {string} acting_user - User(ID) that wants to follow another user.
+     * @param {string} followed_user - User(ID) that should be followed.
+     * @return {}  
+     */
+    follow(acting_user, followed_user) {
+
+        return new Promise((resolve, reject) => {
+            db.sadd(individualPath + "following:" + acting_user, followed_user, function (err, res) {
+                if (err) {
+                    return reject(err)
+                }
+                db.sadd(individualPath + "followers:" + followed_user, acting_user, function (err, res) {
+                    if (err) {
+                        return reject(err)
+                    }
+                    resolve(res)
+                })
+            })
+        })
     },
-  
-  
+
+    /**
+     * Unfollow another user
+     * @param {string} acting_user - User(ID) that wants to follow another user.
+     * @param {string} followed_user - User(ID) that should be followed.
+     * @return {}  
+     */
+    unfollow(acting_user, followed_user) {
+
+        return new Promise((resolve, reject) => {
+            db.srem(individualPath + "following:" + acting_user, followed_user, function (err, res) {
+                if (err) {
+                    return reject(err)
+                }
+                db.srem(individualPath + "followers:" + followed_user, acting_user, function (err, res) {
+                    if (err) {
+                        return reject(err)
+                    }
+                    resolve(res)
+                })
+            })
+        })
+    },
+
+    /**
+     * Follow another user
+     * @param {string} acting_user - User(ID) that wants to follow another user.
+     * @param {string} watched_user - User(ID) that should be followed.
+     * @return {int} 1 or 0 (true or false) 
+     */
+    isfollowing(acting_user, watched_user) {
+
+        return new Promise((resolve, reject) => {
+            db.sismember(individualPath + "following:" + acting_user, watched_user, function (err, res) {
+                if (err) {
+                    return reject(err)
+                }
+                resolve(res)
+            })
+        })
+    },
+
     /**
      * Register new user with username, password
      * @param {JSON} jsonObject - Includes new user parameters.

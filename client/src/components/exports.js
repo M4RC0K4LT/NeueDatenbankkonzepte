@@ -10,6 +10,7 @@ import LoginFields from './user/formComponents/loginfields';
 import LoginUserForm from './user/loginUserForm';
 import RegisterUserForm from './user/registerUserForm';
 import ProfileFeed from './user/profile_feed';
+import FollowButton from './user/formComponents/followButton';
 
 /** Central components-ExportFile */
 export {
@@ -25,4 +26,5 @@ export {
     LoginUserForm,
     RegisterUserForm,
     ProfileFeed,
+    FollowButton,
 }
