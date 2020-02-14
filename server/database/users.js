@@ -123,7 +123,7 @@ module.exports = {
                     if (result == null) {
                         return reject({ "error": "Ungültige Eingaben" });
                     } else {
-                        var id = result;
+                        var id = result[0];
                         db.hgetall(individualPath + 'user:' + id, function (err, result) {
                             if (err) {
                                 return reject(err);
@@ -131,7 +131,7 @@ module.exports = {
                             console.log(result)
                             var correct = bcrypt.compareSync(password, result.password);
                             if (correct == true) {
-                                const token = jwt.sign({ "id": id, "name": result.name }, JWT_KEY);
+                                const token = jwt.sign({ "id": id, "name": result.username }, JWT_KEY);
                                 return resolve({ "token": token });
                             } else {
                                 return reject({ "error": "Ungültige Eingaben" })

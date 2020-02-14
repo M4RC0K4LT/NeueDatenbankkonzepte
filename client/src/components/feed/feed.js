@@ -19,18 +19,11 @@ class Feed extends Component {
   }
 
   componentDidMount() {
-
-    this.socket.on('previous posts', (rawPost => {
-      var newresponse = JSON.parse(rawPost)
-      var newresponsearray = Object.values(newresponse);
-      newresponsearray.reverse()
-      this.setState({ response: newresponsearray});
-    }));
-
+    
     this.socket.on('post', (rawPost => {
       var previous = this.state.response;
-      var newresponse = JSON.parse(rawPost)
-      previous.unshift(newresponse)
+      var newpost = JSON.parse(rawPost);
+      previous.unshift(newpost)
       this.setState({ response: previous });
     }));
 

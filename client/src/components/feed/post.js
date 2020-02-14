@@ -14,6 +14,8 @@ class Post extends Component {
 
     render() {
         const { post } = this.props
+
+        var dater = new Intl.DateTimeFormat('en-GB', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit'}).format(post.timestamp);
         let test = post.content.split("\n");
         return (
             <Card variant="outlined" style={{ marginBottom: ".5rem" }}>
@@ -42,8 +44,8 @@ class Post extends Component {
                 </CardContent>
                 <CardActions>
                     {/*User: {post.user}<br></br>*/}
-                    Datum: {post.posted}<br></br>
-                    Likes: {post.likes}
+                    {dater}<br></br>
+                    {post.username}
                     <IconButton style={{ marginLeft: "auto" }} onClick={this.handleLike(post.id)}>
                         <FavoriteIcon />
                     </IconButton>

@@ -1,10 +1,10 @@
-const express = require('express');
+/**const express = require('express');
 const router = express.Router();
 
 const posts = require('../database/posts');
 
 
-/** POST: Post tweet */
+// POST: Post tweet 
 router.post('/create', async function(request, response) {
     try {
         const post = await posts.create(request.body);
@@ -16,4 +16,12 @@ router.post('/create', async function(request, response) {
     }
 });
 
+router.get('/all', function(request, response) {
+        const post = posts.getAllIDs();
+        
+        console.log(post)
+        response.status(200).send(post);
+});
+
 module.exports = router;
+*/

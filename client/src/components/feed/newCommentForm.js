@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { SocketContext } from '../exports';
 import { TextField, Button } from '@material-ui/core';
 
+var jwtDecode = require('jwt-decode');
+
 
 class NewCommentForm extends Component {
     constructor() {
@@ -25,10 +27,16 @@ class NewCommentForm extends Component {
             this.setState({ error: true });
             return;
         }
+
+        var token = sessionStorage.getItem("authToken");
+        var decoded = jwtDecode(token);
+
+        var userid = decoded.id.toString();
+        var username = decoded.name;
+        var postDate = Date.now();
+
+        this.socket.emit('new post', JSON.stringify({ content: this.state.newpost, timestamp: postDate, username: username, userid: userid }));
         this.setState({ error: false, newpost: "" });
-        this.postDate = new Date().toLocaleString();
-        this.likes = 0;
-        this.socket.emit('post', JSON.stringify({ /*user: user,*/ content: this.state.newpost, posted: this.postDate, likes: this.likes }));
     }
 
     render() {

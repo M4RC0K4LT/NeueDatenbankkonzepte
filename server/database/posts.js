@@ -3,54 +3,48 @@ const db = require('./redis');
 
 module.exports = {
 
-    getAll: () => {
-        return new Promise((resolve, reject) => {
-            db.hmgetall(individualPath + 'post', function (err, result) {
-                if (err) {
-                    return reject(err);
-                } else {
-                    if (result == null) {
-                        return reject({"error": "Tweets nicht gefunden"});
-                    } else {
-                        return resolve;
-                    }
-                }
-            })
+    getAll(socket){
+        db.zrange(individualPath + 'post', 0, -1, (err, postJsonStrings) => {
+            if (err) {
+                return (err);
+            } else { 
+                for(data in postJsonStrings){
+                    db.hgetall(individualPath + "post:" + data, function(err, res){
+                        if(err){
+                            return err;
+                        }
+                        if(res != null){
+                            socket.emit('post', JSON.stringify(res));
+                        }
+                    });
+                }          
+            }
         })
     },
 
-
-
     create: jsonObject => {
         return new Promise((resolve, reject) => {
-            db.hmget(individualPath + 'post', jsonObject.id, function (err, res) {
+            db.incr(individualPath + 'uniquePostID', function(err, uniquePostID) {
                 if (err) {
                     return reject(err);
-                }
-                if (res[0] != null) {
-                    return reject({"error": "ID in Verwendung"})
                 } else {
-                    db.incr(individualPath + 'uniquePostID', function(err, uniquePostID) {
+                    console.log(uniquePostID)
+                    db.hmset(individualPath + 'post:' + uniquePostID, 'username', jsonObject.username, 'timestamp', jsonObject.timestamp, 'content', jsonObject.content, function (err, res) {
                         if (err) {
                             return reject(err);
-                        } else {
-                            db.hmset(individualPath + 'post:' + uniquePostID, 'username', jsonObject.username, 'timestamp', jsonObject.timestamp, 'content', jsonObject.content, function (err, res) {
-                                if (err) {
+                        }
+                        db.zadd(individualPath + 'post', jsonObject.timestamp, uniquePostID, function (err, res) {
+                            if (err) {
+                                return reject(err);
+                            }
+                            db.zadd(individualPath + 'postByUserID:' + jsonObject.userid, jsonObject.timestamp, uniquePostID, function(err, res) {
+                                if(err){
                                     return reject(err);
                                 }
-                                db.hmset(individualPath + 'post', jsonObject.username, uniquePostID, function (err, res) {
-                                    if (err) {
-                                        return reject(err);
-                                    }
-                                    db.hgetall(individualPath + 'post:' + uniquePostID, function (err, res) {
-                                        if (err) {
-                                            return reject(err);
-                                        }
-                                    })
-                                })
+                                return resolve();
                             })
-                        }
-                    });
+                        })
+                    })
                 }
             });
         });
