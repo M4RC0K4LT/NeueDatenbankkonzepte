@@ -60,6 +60,7 @@ class FollowButton extends Component {
             <Button
                 variant="outlined"
                 onClick={this.handleClick}
+                color="secondary"
             >
                 {follow ? 'Unfollow' : 'Follow'}
             </Button>
