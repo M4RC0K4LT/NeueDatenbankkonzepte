@@ -1,4 +1,5 @@
-import Feed from './feed/feed';
+import GlobalFeedPosts from './feed/global_feed';
+import PersonalFeedPosts from './feed/personal_feed'
 import NewCommentForm from './feed/newCommentForm';
 import Post from './feed/post';
 import ResponsiveDrawer from './other/responsiveDrawer';
@@ -9,12 +10,12 @@ import RegisterFields from './user/formComponents/registerfields';
 import LoginFields from './user/formComponents/loginfields';
 import LoginUserForm from './user/loginUserForm';
 import RegisterUserForm from './user/registerUserForm';
-import ProfileFeed from './user/profile_feed';
+import ProfileFeed from './feed/profile_feed';
 import FollowButton from './user/formComponents/followButton';
 
 /** Central components-ExportFile */
 export {
-    Feed,
+    GlobalFeedPosts,
     NewCommentForm,
     Post,
     ResponsiveDrawer,
@@ -27,4 +28,5 @@ export {
     RegisterUserForm,
     ProfileFeed,
     FollowButton,
+    PersonalFeedPosts
 }
