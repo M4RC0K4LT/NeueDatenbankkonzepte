@@ -1,7 +1,4 @@
 const redis = require('redis');
-const bluebird = require('bluebird')
-bluebird.promisifyAll(redis.RedisClient.prototype);
-bluebird.promisifyAll(redis.Multi.prototype);
 
 // Create new redis database client -> if you need other connection options, please specify here
 const redisClient = redis.createClient({

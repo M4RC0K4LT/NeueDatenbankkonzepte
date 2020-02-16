@@ -52,7 +52,6 @@ function ResponsiveDrawer(props) {
                     <Hidden smDown implementation="css">
                         <Toolbar>
                             <Typography variant="subtitle2" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/feed">Feed</Link></Typography>
-                            <Typography variant="subtitle2" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/personal">Personal</Link></Typography> 
                             <Typography variant="subtitle2" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/profile">Profile</Link></Typography>    
                             {logout}                        
                         </Toolbar>
@@ -84,13 +83,7 @@ function ResponsiveDrawer(props) {
                         </ListItem>
                     </List>
                     <List>
-                        <ListItem button key={2} component={Link} to={"/personal"} >
-                            {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
-                            <ListItemText primary={"Personal"} />
-                        </ListItem>
-                    </List>
-                    <List>
-                        <ListItem button key={3} component={Link} to={"/profile"} >
+                        <ListItem button key={2} component={Link} to={"/profile"} >
                             {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Profil"} />
                         </ListItem>

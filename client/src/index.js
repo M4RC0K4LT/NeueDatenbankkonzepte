@@ -6,8 +6,7 @@ import { ResponsiveDrawer, PrivateRoute } from './components/exports'
 import { Container } from '@material-ui/core';
 import Login from './main/login';
 import Register from './main/register';
-import Profile from './main/profile';
-import PersonalFeed from './main/PersonalFeed';
+import Profile from './main/profile'
 
 window.$apiroute = "http://localhost:3000";
 
@@ -24,7 +23,6 @@ class Index extends React.Component{
                 <PrivateRoute exact path="/feed" component={GlobalFeed} />
                 <PrivateRoute path="/profile/:id" component={Profile} />
                 <PrivateRoute exact path="/profile" component={Profile} />
-                <PrivateRoute exact path="/personal" component={PersonalFeed} />
             </Switch>
         </Container>
     )

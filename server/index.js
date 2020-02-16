@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const io = require('socket.io')(http);
 require("dotenv").config()
 
-individualPath = "gruppe-kann-nix-50-";
+individualPath = "gruppe-kann-nix-40-";
 
 const db = require('./database/redis');
 
@@ -26,7 +26,6 @@ app.get('/', (req, res) => {
 });
 
 const posts = require('./database/posts');
-const user = require('./database/users');
 
 const socketauth = require("./routes/auth");
 
@@ -35,49 +34,30 @@ io.use(socketauth)
 io.on('connection', socket => {
 
     console.log(`User ${socket.decoded.name} connected to main socket.`);
+    
 
     // Wait for post event
     socket.on('new globalpost', async postAsJson => {
         const post = JSON.parse(postAsJson);
 
         // Save post in redis
-        var id = await posts.create(post);
-        let newpost = Object.assign({"postid": id.toString(), "liked": false, "likes": "0"}, post);
+        await posts.create(post);
 
         // Send Post to everyone
-        io.sockets.in("global").emit('post', JSON.stringify(newpost));
-        io.sockets.in(socket.decoded.id).emit('post', JSON.stringify(newpost));
+        io.sockets.in("global").emit('post', JSON.stringify(post));
+        io.sockets.in(socket.decoded.id).emit('post', JSON.stringify(post));
     });
 
     socket.on('leave', function(room){
-        if(room === "followers"){
-            user.leaveFriendsRoom(socket.decoded.id, socket);
-        }else {
-            socket.leave(room)
-            console.log(socket.decoded.name + " left room: " + room)
-        }      
+        socket.leave(room)
+        console.log(socket.decoded.name + " left room: " + room)
     })
-
-    socket.on('like', function(postid){
-        posts.likePost(postid, socket.decoded.id);
-        io.emit("newlike", postid.toString())
-    })
-
-    socket.on('removelike', function(postid){
-        posts.removePostLike(postid, socket.decoded.id);
-        io.emit("removelike", postid.toString())
-    })
-
+    
     socket.on('join', function(room){
         socket.join(room);
 
         if(room === "global"){
             posts.getAll(socket);
-        }
-
-        if(room === "personal"){
-            user.getToFriendsRoom(socket.decoded.id, socket)
-            posts.getPersonalFeed(socket.decoded.id, socket);
         }
 
         else{
