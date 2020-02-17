@@ -76,17 +76,24 @@ class PersonalFeedPosts extends Component {
     if(response.length === 0 || response == null || typeof response != "object" ){
       showposts = (
         <div>
-          PersonalFeed
-          <Typography variant="h4">No Posts :/</Typography>
-          <Typography variant="subtitle1">Your followed users did not post anything yet!</Typography>
-          <Typography variant="h6">{error}</Typography>
+          <Typography variant="h3" align="center">Personal Feed</Typography>
+          <br></br>
+          <Typography variant="h4" align="center">The place for your friends posts</Typography>
+          <br></br><br></br><hr></hr><br></br>
+          <Typography variant="h4"align="center">Sorry - Your friends are boring :/</Typography>
+          <br></br>
+          <Typography variant="subtitle1" align="center">Your followed users did not post anything yet!</Typography>
+          <Typography variant="h6" align="center">{error}</Typography>
         </div>
       )
     } else {
 
       showposts = (
         <div>
-          PersonalFeed
+          <Typography variant="h3" align="center">Personal Feed</Typography>
+          <br></br>
+          <Typography variant="h4" align="center">The place for your friends posts</Typography>
+          <br></br><br></br><br></br>
           {response.map((data, i)=> (
             <Post 
               key={i}

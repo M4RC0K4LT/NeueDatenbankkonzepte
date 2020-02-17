@@ -25,7 +25,7 @@ function ResponsiveDrawer(props) {
     let logout = null;
     if (!(window.location.pathname === "/login" || window.location.pathname === "/")) {
         logout = (
-            <Button variant="contained" size="small" className={classes.logoutButton} onClick={handleLogout}>
+            <Button variant="outlined" size="small" className={classes.logoutButton} onClick={handleLogout}>
                 Logout
             </Button>
         )
@@ -48,12 +48,12 @@ function ResponsiveDrawer(props) {
                             <MenuOutlinedIcon />
                         </IconButton>
                     </Hidden>
-                    <Typography variant="h6" className={classes.title}><Link style={{ textDecoration: "none", color: "inherit" }} to="/">Tweety</Link></Typography>
+                    <Typography variant="h3" className={classes.title}><Link style={{ textDecoration: "none", color: "inherit" }} to="/">Tweety</Link></Typography>
                     <Hidden smDown implementation="css">
                         <Toolbar>
-                            <Typography variant="subtitle2" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/feed">Feed</Link></Typography>
-                            <Typography variant="subtitle2" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/personal">Personal</Link></Typography> 
-                            <Typography variant="subtitle2" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/profile">Profile</Link></Typography>    
+                            <Typography variant="h5" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/feed">Feed</Link></Typography>
+                            <Typography variant="h5" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/personal">Personal</Link></Typography> 
+                            <Typography variant="h5" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/profile">Profile</Link></Typography>    
                             {logout}                        
                         </Toolbar>
                         

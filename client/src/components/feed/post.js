@@ -33,14 +33,14 @@ class Post extends Component {
                         }
                         if (i < test.length - 1) {
                             return (
-                                <Typography key={i} variant="body1">
+                                <Typography key={i} variant="h5">
                                     {data}
                                     <br />
                                 </Typography>
                             )
                         } else {
                             return (
-                                <Typography key={i} variant="body1">
+                                <Typography key={i} variant="h5">
                                     {data}
                                 </Typography>
                             )
