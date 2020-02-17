@@ -14,10 +14,6 @@ class ProfileFeed extends Component {
     this.handleLike = this.handleLike.bind(this);
   }
 
-  onLike(id){
-    console.log("test");
-  }
-
   componentDidMount() {
     
     let { response } = this.state

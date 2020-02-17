@@ -89,21 +89,26 @@ module.exports = {
   /**
    * Return user by token. Used for returning own userdata in profile,... - based on Bearer Token (has to be splitted before).
    * @param {string} token - Searched Token.
-   * @return {JSON} Userdata with ! passwordhash !.
- 
-  findByToken: token => {
-    return jwt.verify(token, JWT_KEY, async (err, userid) => {
+   * @return {JSON} Userdata with ! passwordhash !. 
+   */
+  async getFriends(token){
+    let id = null;
+    jwt.verify(token, JWT_KEY, async (err, userid) => {
       if(err){
-        return ({"request": "failed", "error": err.message});
+        console.log(err);
       }
-      user = await module.exports.findById(parseInt(userid));
-      if(user == null || user.user_tokens != token){
-        return ({"request": "failed", "error": "Kein gültiger UserToken"})
-      }  
-      return ({"request": "successful", "user_id": user.user_id, "user_name": user.user_name, "user_mail": user.user_mail, "user_password": user.user_password}); 
-    });
-    
-     
+      console.log(userid)
+      id=userid.id;
+    })
+    let friendsids = await db.smembersAsync(individualPath + "following:" + id)
+    let friends = []
+    for(friend of friendsids){
+      let frienddata = await db.hgetAsync(individualPath + "user:" + friend, "username")
+      let online = await db.sismemberAsync(individualPath + "onlineUsers", friend);
+      let data = {"id": friend, "username": frienddata, "online": online}
+      friends.push(data)
+    }
+    return friends
   },
  
  
@@ -128,7 +133,6 @@ module.exports = {
               if (err) {
                 return reject(err);
               }
-              console.log(result)
               if (result != null) {
                 var correct = bcrypt.compareSync(password, result.password);
                 if (correct == true) {
@@ -222,6 +226,43 @@ module.exports = {
     }
     return friends;
   },
+
+  /**
+   * Follow another user
+   * @param {string} acting_user - User(ID) that wants to follow another user.
+   * @param {string} socket - User(ID) that should be followed.
+   * @return {int} 1 or 0 (true or false) 
+   */
+  async setOnline(acting_user) {
+    var online = await db.saddAsync(individualPath + "onlineUsers", acting_user);
+    return online;
+  },
+
+
+  /**
+   * Follow another user
+   * @param {string} acting_user - User(ID) that wants to follow another user.
+   * @param {string} socket - User(ID) that should be followed.
+   * @return {int} 1 or 0 (true or false) 
+   */
+  async setOffline(acting_user) {
+    var offline = await db.sremAsync(individualPath + "onlineUsers", acting_user);
+    return offline;
+  },
+
+  /**
+   * Follow another user
+   * @param {string} acting_user - User(ID) that wants to follow another user.
+   * @param {string} socket - User(ID) that should be followed.
+   * @return {int} 1 or 0 (true or false) 
+   */
+  async getOnlineUsers() {
+    var onlineUsers = await db.smembersAsync(individualPath + "onlineUsers");
+    console.log(onlineUsers)
+    return onlineUsers;
+  },
+
+
 
   /**
     * Follow another user

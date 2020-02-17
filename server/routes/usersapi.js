@@ -106,6 +106,21 @@ router.post('/register', async function(request, response) {
     }
 });
 
+/** POST: Register new User */
+router.get('/getFriends', async function(request, response) {
+    try {
+        const authHeader = request.headers["authorization"];
+        const token = authHeader && authHeader.split(" ")[1];
+        const friends = await users.getFriends(token);       
+        return response.status(201).send(friends);
+    }
+    catch (err) {
+        console.log(err)
+        let data = Object.assign({"request": "failed"}, err)
+        response.status(500).send(data);
+    }
+});
+
 /** DELETE: Logout -> Delete Session Token <- Just pre-implementation for "real", unique SessionTokens (Logout works without this request)
 router.delete('/logout', auth, async function(request, response){
     try {

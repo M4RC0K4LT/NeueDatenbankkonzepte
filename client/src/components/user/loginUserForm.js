@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { Button, withStyles} from '@material-ui/core';
 import { useStyles, LoginFields} from '../exports'
 import { postUser } from "../../api/exports";
@@ -59,7 +59,7 @@ class LoginUserForm extends Component {
         
         //Successful Login
         if(success){
-            return window.location.replace("/feed");
+            return <Redirect to="/feed"></Redirect>;
         }
 
         //Already logged in?

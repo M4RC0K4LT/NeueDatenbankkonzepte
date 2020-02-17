@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const io = require('socket.io')(http);
 require("dotenv").config()
 
-individualPath = "gruppe-kann-nix-50-";
+individualPath = "gruppe-kann-nix-51-";
 
 const db = require('./database/redis');
 
@@ -32,9 +32,11 @@ const socketauth = require("./routes/auth");
 
 io.use(socketauth)
 
-io.on('connection', socket => {
+io.on('connection', async socket => {
 
     console.log(`User ${socket.decoded.name} connected to main socket.`);
+    await user.setOnline(socket.decoded.id);
+    io.emit("goesonline", socket.decoded.id)
 
     // Wait for post event
     socket.on('new globalpost', async postAsJson => {
@@ -89,8 +91,10 @@ io.on('connection', socket => {
 
 
 
-    socket.on('disconnect', (reason) => {
+    socket.on('disconnect', async (reason) => {
         console.log(`User ${socket.decoded.name} has left the main socket. -> ${reason}.`);
+        await user.setOffline(socket.decoded.id);
+        io.emit("goesoffline", socket.decoded.id);
     });
 
 });

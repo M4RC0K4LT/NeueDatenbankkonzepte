@@ -3,6 +3,7 @@ import postUser from './postUser';
 import postFollow from './postFollow';
 import postUnfollow from './postUnfollow';
 import postIsFollowing from './postIsFollowing';
+import getFriends from './getFriends';
 
 
 /** Central API-Requests Export-File */
@@ -11,5 +12,6 @@ export {
     postUser,
     postFollow,
     postUnfollow,
-    postIsFollowing
+    postIsFollowing,
+    getFriends
 }

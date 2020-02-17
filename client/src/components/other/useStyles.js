@@ -50,6 +50,11 @@ const useStyles = theme => ({
     },
     logoutButton: {
       marginLeft: "150px"
+    },
+    onlineFriends: {
+      position: "sticky",
+      top: "100px",
+      textAlign: "center"
     }
     
 });

@@ -80,7 +80,7 @@ class RegisterUserForm extends Component {
 
         //Successful registration
         if(success === true){
-            return window.location.replace("/feed");
+            return <Redirect to="/feed"></Redirect>;
         }
 
         return (

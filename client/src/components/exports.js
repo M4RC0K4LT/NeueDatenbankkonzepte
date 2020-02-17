@@ -12,6 +12,7 @@ import LoginUserForm from './user/loginUserForm';
 import RegisterUserForm from './user/registerUserForm';
 import ProfileFeed from './feed/profile_feed';
 import FollowButton from './user/formComponents/followButton';
+import ShowFollowedUsers from './user/showFollowedUsers';
 
 /** Central components-ExportFile */
 export {
@@ -28,5 +29,6 @@ export {
     RegisterUserForm,
     ProfileFeed,
     FollowButton,
-    PersonalFeedPosts
+    PersonalFeedPosts,
+    ShowFollowedUsers
 }
