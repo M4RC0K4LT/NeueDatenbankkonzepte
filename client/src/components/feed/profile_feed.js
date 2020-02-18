@@ -78,23 +78,16 @@ class ProfileFeed extends Component {
     if(response.length === 0 || response == null || typeof response != "object" ){
       showposts = (
         <div>
-          <Typography variant="h3" align="center">*Nutzer* Feed</Typography>
+          <Typography variant="h4"align="center">Sorry - This user is boring :/</Typography>
           <br></br>
-          <Typography variant="h4" align="center">What *Nutzer* had to show</Typography>
-          <br></br><br></br>
-          <Typography variant="h4">No Posts :/</Typography>
-          <Typography variant="subtitle1">This user has not posted yes!</Typography>
-          <Typography variant="h6">{error}</Typography>
+          <Typography variant="subtitle1" align="center">This user did not post anything yet!</Typography>
+          <Typography variant="h6" align="center">{error}</Typography>
         </div>
       )
     } else {
 
       showposts = (
         <div>
-          <Typography variant="h3" align="center">*Nutzer* Feed</Typography>
-          <br></br>
-          <Typography variant="h4" align="center">What *Nutzer* had to show</Typography>
-          <br></br><br></br>
           {response.map((data, i)=> (
             <Post 
               key={i}

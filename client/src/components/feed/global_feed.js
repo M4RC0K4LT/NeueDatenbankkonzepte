@@ -73,9 +73,13 @@ class GlobalFeedPosts extends Component {
     if(response.length === 0 || response == null || typeof response != "object" ){
       showposts = (
         <div>
-          <Typography variant="h4">No Posts :/</Typography>
-          <Typography variant="subtitle1">There are no posts, yet! Maybe you should enter your thoughts here...</Typography>
-          <Typography variant="h6">{error}</Typography>
+          <Typography variant="h3" align="center">All posts for you</Typography>
+          <br></br>
+          <Typography variant="h4" align="center">What people hat to show</Typography>
+          <br></br><br></br><hr></hr><br></br>
+          <Typography variant="h4" align="center">Sorry - There are no posts :/</Typography>
+          <Typography variant="subtitle1" align="center">There are no posts, yet! Maybe you should enter your thoughts here...</Typography>
+          <Typography variant="h6" align="center">{error}</Typography>
         </div>
       )
     } else {

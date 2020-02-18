@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, withStyles } from '@material-ui/core';
+import { Container, withStyles, Typography } from '@material-ui/core';
 import { useStyles, ProfileFeed, FollowButton } from '../components/exports';
 
 var jwtDecode = require('jwt-decode');
@@ -30,6 +30,10 @@ class Profile extends Component {
 
     return (
       <Container>
+        <Typography variant="h3" align="center">*Nutzer* Feed</Typography>
+          <br></br>
+          <Typography variant="h4" align="center">What *Nutzer* had to show</Typography>
+          <br></br><br></br><hr></hr><br></br><br></br>
           <ProfileFeed
             id={userid}>
           </ProfileFeed>
