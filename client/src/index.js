@@ -18,7 +18,7 @@ class Index extends React.Component{
     let sidebars = null;
     if(!(window.location.pathname == "/login" || window.location.pathname == "register")){
         sidebars = (
-            <Grid item xs={2}>
+            <Grid item xs={0} zeroMinWidth={true} md={2}>
                 <ShowFollowedUsers></ShowFollowedUsers>
             </Grid>  
         )
@@ -43,6 +43,7 @@ class Index extends React.Component{
                     <PrivateRoute exact path="/personal" component={PersonalFeed} />
                 </Switch>
             </Grid>
+            {sidebars}
         </Grid>
     )
 

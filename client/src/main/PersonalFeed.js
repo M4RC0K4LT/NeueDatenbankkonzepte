@@ -7,7 +7,6 @@ class GlobalFeed extends Component {
   render() {
     return (
       <div>    
-        Mein Feed
         <PersonalFeedPosts></PersonalFeedPosts>
       </div>
     );

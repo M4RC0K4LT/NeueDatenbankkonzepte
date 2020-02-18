@@ -12,19 +12,14 @@ const router = express.Router();
 //const auth = require("./auth");
 const users = require("../database/users");
 
-/** GET: Current User`s data
-router.get('/', auth, async function(request, response) {
+/** GET: Current User`s data */
+router.get('/getdata/:id', async function(request, response) {
     try {
-        const authHeader = request.headers["authorization"];
-        const token = authHeader && authHeader.split(" ")[1];
-        const userdetail = await users.findByToken(token);
-        if(userdetail.request === "successful"){
-            return response.status(200).send(userdetail);
-        }else {
-            return response.status(500).send(userdetail);
-        }       
+        const userinformation = await users.findById(request.params.id);
+        return response.status(200).send(userinformation);      
     } catch(err){
-        response.status(500).send(err);
+        let data = Object.assign({"request": "failed"}, err)
+        response.status(500).send(data);
     }
 });
 

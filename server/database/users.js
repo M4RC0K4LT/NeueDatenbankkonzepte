@@ -72,16 +72,24 @@ module.exports = {
    * Return user by ID.
    * @param {string} id - Searched UserID.
    * @return {JSON} Userdata.
+   */
  
-  findById: id => {
-    return new Promise((resolve, reject) => {
-      db.get(`SELECT * FROM users WHERE user_id = $id`, {$id: id}, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
+  findById: (id) => {
+    return new Promise(async (resolve, reject) => {
+      try{
+        let username = await db.hgetAsync(individualPath + "user:" + id, "username");
+        if(username == null){
+          return(reject({"error": "Kein User"}))
         }
-      });
+        let count_posts = await db.zcountAsync(individualPath + 'postByUserID:' + id, -Infinity, +Infinity);
+        let count_followers = await db.scardAsync(individualPath + "followers:" + id);
+        let count_following = await db.scardAsync(individualPath + "following:" + id);
+        let daten = {"username": username, "posts": count_posts, "followers": count_followers, "following": count_following };
+        resolve(daten);
+      } catch(err){
+        reject(err)
+      }
+      
     });
   },
  
