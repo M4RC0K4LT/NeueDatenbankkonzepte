@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withStyles, Button } from '@material-ui/core';
 import { useStyles } from "../../exports";
-import { postFollow, postUnfollow, postIsFollowing } from "../../../api/exports";
+import { postFollow, postUnfollow, postIsFollowing, getUserInformation } from "../../../api/exports";
 
 /** LoginFields Component */
 class FollowButton extends Component {
@@ -11,7 +11,9 @@ class FollowButton extends Component {
             follow: false,
             fontColor: "white",
             width: "100%",
-        }
+            userdata: {},
+        };
+        
         this.handleClick = this.handleClick.bind(this)     
     }
 
@@ -33,7 +35,7 @@ class FollowButton extends Component {
                     //this.setState({ open: true, snackcolor: "error", message: data.error, disablefields: false })
                     console.log("an error occured")
                 }else {
-                    this.setState({ follow: false, color: "green", fontSize: 24 })
+                    this.setState({ follow: false, color: "green", fontSize: 20 })
                 }
             })
         }
@@ -49,14 +51,21 @@ class FollowButton extends Component {
                 if(data.result === "true"){
                     this.setState({ follow: true, color: "darkred", fontSize: 16 })
                 }else {
-                    this.setState({ follow: false, color: "green", fontSize: 24 })
+                    this.setState({ follow: false, color: "green", fontSize: 20 })
                 }
             }
-        })
+        });
+        /*getUserInformation(this.props.match.params.id).then(data => {
+            if (data.length < 1 || data.request === "failed") {
+                console.log(data.error)
+            }
+            this.setState({ userdata: data })
+        })*/
     }
 
     render(){
         const { follow } = this.state;
+        // const { userdata } = this.state;
 
         return (
             <Button
