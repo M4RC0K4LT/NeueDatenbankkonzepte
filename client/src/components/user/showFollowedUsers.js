@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemSecondaryAction, withStyles, Badge, Container, IconButton, Typography, Divider} from '@material-ui/core';
+import { List, ListItem, ListItemAvatar, Link, Avatar, ListItemText, ListItemSecondaryAction, withStyles, Badge, Container, IconButton, Typography, Divider} from '@material-ui/core';
 import { useStyles, SocketContext } from '../exports'
 import { Chat as ChatIcon } from '@material-ui/icons';
 import { getFriends } from "../../api/exports";
-import { Link, Redirect, useHistory } from 'react-router-dom';
+import {  Redirect, useHistory } from 'react-router-dom';
 
 const StyledBadge = withStyles(theme => ({
     badge: {
@@ -97,7 +97,7 @@ class ShowFollowedUsers extends Component {
                 <List>
                     {this.state.allfriends.map((value, i) => {
                         return (
-                        <ListItem key={i} button component={Link} to={"/profile/" + value.id}>
+                        <ListItem key={i} button component={Link} style={{ color: "inherit" }} href={"/profile/" + value.id}>
                             <ListItemAvatar>
                                 <StyledBadge
                                     overlap="circle"
@@ -108,12 +108,12 @@ class ShowFollowedUsers extends Component {
                                     variant="dot"
                                     invisible={!value.online}
                                 >
-                                    <Avatar />
+                                    <Avatar src="https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg" />
                                 </StyledBadge>
                             </ListItemAvatar>
                             <ListItemText id={value.id} primary={value.username} />
                             <ListItemSecondaryAction>
-                                <IconButton component={Link} to={"/private/" + value.id}>
+                                <IconButton component={Link} href={"/private/" + value.id}>
                                 <ChatIcon></ChatIcon>
                                 </IconButton>
                             </ListItemSecondaryAction>

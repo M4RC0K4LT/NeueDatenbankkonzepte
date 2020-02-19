@@ -1,3 +1,5 @@
+import { green } from '@material-ui/core/colors';
+
 const drawerWidth = 240;
 
 /** Store CSS styles */
@@ -59,6 +61,7 @@ const useStyles = theme => ({
       textAlign: "center",
       backgroundColor: "#DFDFDF",  
       borderRadius: "15px",
+      padding: "5px"
 
     },
 
@@ -69,21 +72,41 @@ const useStyles = theme => ({
       backgroundColor: theme.palette.primary.main,
       display: "inline-flex",
       alignItems: "center",
-      maxWidth: "70%",
       flexWrap: "wrap",
-      "& div": {
-        minWidth: "0",
-      }
+      maxWidth: "70%"
     },
     privateMessageText: {
       paddingLeft: "12px",
       paddingRight: "12px",
       paddingTop: "5px",
       paddingBottom: "5px",
+      wordBreak: "break-all",
       display: "flex",
+      minWidth: "70%",
       flex: 1
       
-    }
+    },
+
+    ProfileAvatar: {
+      width: theme.spacing(20),
+      height: theme.spacing(20),
+      margin: "auto",
+      marginBottom: theme.spacing(4),
+    },
+    
+    backdrop: {
+      zIndex: theme.zIndex.drawer + 1,
+      color: '#fff',
+    },
+
+    error: {
+      backgroundColor: theme.palette.error.dark,
+      justifyContent: "center"
+    },
+    success: {
+        backgroundColor: green[500],
+        justifyContent: "center"
+    },
 });
 
 /**

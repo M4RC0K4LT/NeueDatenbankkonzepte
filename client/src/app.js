@@ -18,7 +18,7 @@ const exclusionArray = [
 
 const Friends = () => (
     <Hidden mdDown>
-        <Grid item xs={2}>       
+        <Grid item xs={2} style={{ marginLeft: "100px" }}>       
                 <ShowFollowedUsers></ShowFollowedUsers>
         </Grid>  
     </Hidden>
@@ -26,7 +26,7 @@ const Friends = () => (
 
 const News = () => (
     <Hidden mdDown>
-        <Grid item xs={2}>
+        <Grid item xs={2} style={{ marginRight: "100px" }}>
             
         </Grid>  
     </Hidden>
@@ -37,14 +37,14 @@ const App = ({location}) => (
         <ResponsiveDrawer
             content={
                 <Grid
-                    style={{ marginTop: "5rem", height: "100%" }}
+                    style={{ marginTop: "5rem", height: "100%", }}
                     container
                     direction="row"
                     justify="center"
-                    spacing={6}
+                    spacing={1}
                 >
                     {exclusionArray.join().includes(location.pathname) == false && <News/>}
-                    <Grid item xs={8} lg={4}>  
+                    <Grid item xs={7} lg={4}>  
                         <Switch>
                             <Route exact path="/login" component={Login} />
                             <Route exact path="/register" component={Register} />

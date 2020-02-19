@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Button, withStyles} from '@material-ui/core';
-import { useStyles, RegisterFields } from '../exports'
+import { Button, withStyles, Backdrop, CircularProgress } from '@material-ui/core';
+import { useStyles, RegisterFields, SnackbarMessage } from '../exports'
 import { postNewUser } from "../../api/exports";
 import { Redirect } from 'react-router-dom';
 
@@ -19,6 +19,7 @@ class RegisterUserForm extends Component {
             snackcolor: "error",
             disablefields: false,
             success: false,
+            openLoading: false,
 
             username: "",
             password: "",
@@ -26,7 +27,6 @@ class RegisterUserForm extends Component {
 
         };
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
     }    
 
@@ -40,30 +40,23 @@ class RegisterUserForm extends Component {
           [name]: value
         });
     }
-
-    //Close Error/Success Message
-    handleSnackbarClose(){
-        this.setState({ open: false })
-    }
     
     //Submit data
     handleSubmit(event){ 
         event.preventDefault();
-        const { username, mail, password, confirmpassword} = this.state;
+        const { username, password, confirmpassword  } = this.state;
         
         if(password !== confirmpassword){
             this.setState({ message: "Passwörter stimmen nicht überein", open: true, snackcolor: "error" })
             return;
         }
-        this.setState({ disablefields: true });
+        this.setState({ openLoading: true });
         postNewUser(username, password).then(data => {
             if(data.length<1 || data.request === "failed"){
-                alert(data.error)
-                this.setState({ open: true, snackcolor: "error", message: data.error, disablefields: false })
+                this.setState({ open: true, snackcolor: "error", message: data.error, openLoading: false })
             } else {
-                alert("subba")
                 sessionStorage.setItem('authToken', data.token);
-                this.setState({ success: true })
+                this.setState({ success: true, openLoading: false })
             }
         })
     }
@@ -71,16 +64,16 @@ class RegisterUserForm extends Component {
     render() {
         
         const { classes } = this.props;
-        const { username, password, confirmpassword, disablefields, success } = this.state;
+        const { username, password, confirmpassword, disablefields, success, openLoading, open } = this.state;
 
         //Check if already logged in
         if (sessionStorage.getItem("authToken") != null){
-            return <Redirect to={"/feed"} />;
+            return window.location.replace("/feed")
         }
 
         //Successful registration
         if(success === true){
-            return <Redirect to="/feed"></Redirect>;
+            return window.location.replace("/feed")
         }
 
         return (
@@ -103,6 +96,15 @@ class RegisterUserForm extends Component {
                     Registrieren
                 </Button>
                 </form>
+                <Backdrop className={classes.backdrop} open={openLoading}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
+                <SnackbarMessage
+                    open={this.state.open}
+                    onClose={() => this.setState({ open: false })}
+                    message={this.state.message}
+                    color={this.state.snackcolor}>
+                </SnackbarMessage>
             </div>
         );
     }

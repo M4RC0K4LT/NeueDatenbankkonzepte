@@ -41,6 +41,7 @@ router.post('/login', async function(request, response) {
         let data = Object.assign({"request": "successful"}, login)
         response.status(200).send(data);       
     } catch (err) {
+        console.log(err)
         let data = Object.assign({"request": "failed"}, err)
         response.status(500).send(data);
     }

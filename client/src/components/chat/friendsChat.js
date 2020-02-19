@@ -11,10 +11,14 @@ class FriendsChat extends Component {
       error: null,
     };
     this.socket = SocketContext;
+    this.scrollToBottom = this.scrollToBottom.bind(this);
+    this.messagesEndRef = React.createRef()
   }
 
   componentDidMount() {
     let { response } = this.state;
+
+    
 
     this.socket.emit("join private", this.props.friendsid)
 
@@ -24,46 +28,57 @@ class FriendsChat extends Component {
       var newpost = JSON.parse(rawPost);
       previous.push(newpost)
       this.setState({ response: previous });
+      
+      
     }));
 
     this.socket.on('error', (err) => {
-      this.setState({ error: "-- "+err+" --" });
+      this.setState({ error: "-- " + err + " --" });
     });
-    
   }
 
-  componentWillUnmount(){
+  scrollToBottom = () => {
+    this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+  }
+
+  componentDidUpdate(){
+    this.scrollToBottom()
+  }
+
+  componentWillUnmount() {
     this.socket.emit("leave private", this.props.friendsid)
   }
 
   render() {
     const { response, error } = this.state;
     let showposts = null;
-    
-    if(response.length === 0 || response == null || typeof response != "object" ){
+
+    if (response.length === 0 || response == null || typeof response != "object") {
       showposts = (
         <div>
           <Typography variant="h" align="center">You haven't chated with that user yet</Typography>
-          <Typography variant="h6" align="center">{error}</Typography>
+          <Typography variant="h6" align="center" ref={this.messagesEndRef}>{error}</Typography>
         </div>
       )
     } else {
 
       showposts = (
-        <div style={{ height: "600px", width: "100%", overflow: "hidden" }} id="test">
-            <List style={{ height: "100%", width: "100%", overflow: "auto", paddingRight: "18px", boxSizing: "content-box" }}>
-                {response.map((data, i)=> {
-                    return(
-                      <ListItem key={i} style={{ display: "flex" }}>
-                          <div className={this.props.classes.privateMessage} style={{ marginLeft: ((data.sender===this.props.friendsid) ? "0" : "auto") }}><div className={this.props.classes.privateMessageText}>{data.message}</div></div>
-                      </ListItem>)       
-                })}
-            </List>
+        <div style={{ height: "600px", width: "100%", overflow: "hidden" }}>
+          <List style={{ height: "100%", width: "100%", overflow: "auto", paddingRight: "18px", boxSizing: "content-box" }}>
+            {response.map((data, i) => {        
+              return (
+                <ListItem key={i} style={{ display: "flex" }}>
+                  <div className={this.props.classes.privateMessage} style={{ marginLeft: ((data.sender === this.props.friendsid) ? "0" : "auto") }}><div className={this.props.classes.privateMessageText}>{data.message}</div></div>
+                </ListItem>)
+            })}
+          <div ref={this.messagesEndRef}></div>
+          </List>
+          
         </div>)
     }
-        
+
     return showposts;
   }
 }
 
-export default withStyles(useStyles) (FriendsChat);
+export default withStyles(useStyles)(FriendsChat);

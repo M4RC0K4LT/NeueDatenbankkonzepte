@@ -14,7 +14,8 @@ import ProfileFeed from './feed/profile_feed';
 import FollowButton from './user/formComponents/followButton';
 import ShowFollowedUsers from './user/showFollowedUsers';
 import NewPrivateMessage from './chat/newPrivateMessage';
-import FriendsChat from './chat/friendsChat'
+import FriendsChat from './chat/friendsChat';
+import SnackbarMessage from './other/snackbarmessage';
 
 /** Central components-ExportFile */
 export {
@@ -34,5 +35,6 @@ export {
     PersonalFeedPosts,
     ShowFollowedUsers,
     NewPrivateMessage,
-    FriendsChat
+    FriendsChat,
+    SnackbarMessage
 }
