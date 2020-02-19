@@ -56,7 +56,33 @@ const useStyles = theme => ({
     onlineFriends: {
       position: "sticky",
       top: "100px",
-      textAlign: "center"     
+      textAlign: "center",
+      backgroundColor: "#DFDFDF",  
+      borderRadius: "15px",
+
+    },
+
+    privateMessage: {
+      borderRadius: "16px", 
+      color: "white", 
+      overflowWrap:"break-word",
+      backgroundColor: theme.palette.primary.main,
+      display: "inline-flex",
+      alignItems: "center",
+      maxWidth: "70%",
+      flexWrap: "wrap",
+      "& div": {
+        minWidth: "0",
+      }
+    },
+    privateMessageText: {
+      paddingLeft: "12px",
+      paddingRight: "12px",
+      paddingTop: "5px",
+      paddingBottom: "5px",
+      display: "flex",
+      flex: 1
+      
     }
 });
 

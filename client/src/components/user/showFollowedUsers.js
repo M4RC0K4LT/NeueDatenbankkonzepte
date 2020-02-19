@@ -97,7 +97,7 @@ class ShowFollowedUsers extends Component {
                 <List>
                     {this.state.allfriends.map((value, i) => {
                         return (
-                        <ListItem key={i} button component={Link} to={"/profile/" + value.id} divider={true}>
+                        <ListItem key={i} button component={Link} to={"/profile/" + value.id}>
                             <ListItemAvatar>
                                 <StyledBadge
                                     overlap="circle"
@@ -113,7 +113,7 @@ class ShowFollowedUsers extends Component {
                             </ListItemAvatar>
                             <ListItemText id={value.id} primary={value.username} />
                             <ListItemSecondaryAction>
-                                <IconButton component={Link} to="/help">
+                                <IconButton component={Link} to={"/private/" + value.id}>
                                 <ChatIcon></ChatIcon>
                                 </IconButton>
                             </ListItemSecondaryAction>

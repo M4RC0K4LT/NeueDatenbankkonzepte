@@ -13,7 +13,7 @@ function handleLogout() {
 /** Responsible for suitable page-navigation regarding device width */
 function ResponsiveDrawer(props) {
 
-    const { container, classes, content } = props;
+    const { container, classes, content, loc } = props;
     const theme = useTheme();
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -23,7 +23,7 @@ function ResponsiveDrawer(props) {
 
     /** Logout Button */
     let logout = null;
-    if (!(window.location.pathname === "/login" || window.location.pathname === "/")) {
+    if (!(loc === "/login" || loc === "/register")) {
         logout = (
             <Button variant="outlined" size="small" className={classes.logoutButton} onClick={handleLogout}>
                 Logout

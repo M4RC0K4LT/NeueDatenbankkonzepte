@@ -103,9 +103,7 @@ module.exports = {
     let id = null;
     jwt.verify(token, JWT_KEY, async (err, userid) => {
       if(err){
-        console.log(err);
       }
-      console.log(userid)
       id=userid.id;
     })
     let friendsids = await db.smembersAsync(individualPath + "following:" + id)

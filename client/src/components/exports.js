@@ -13,6 +13,8 @@ import RegisterUserForm from './user/registerUserForm';
 import ProfileFeed from './feed/profile_feed';
 import FollowButton from './user/formComponents/followButton';
 import ShowFollowedUsers from './user/showFollowedUsers';
+import NewPrivateMessage from './chat/newPrivateMessage';
+import FriendsChat from './chat/friendsChat'
 
 /** Central components-ExportFile */
 export {
@@ -30,5 +32,7 @@ export {
     ProfileFeed,
     FollowButton,
     PersonalFeedPosts,
-    ShowFollowedUsers
+    ShowFollowedUsers,
+    NewPrivateMessage,
+    FriendsChat
 }
