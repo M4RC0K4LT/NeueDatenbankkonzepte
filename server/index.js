@@ -58,6 +58,11 @@ io.on('connection', async socket => {
         io.sockets.in(socket.decoded.id).emit('post', JSON.stringify(newpost));
     });
 
+    socket.on("new privatepost", async function(postAsJson){
+        const post = JSON.parse(postAsJson);
+        await posts.createPrivatePost(socket.decoded.id, post.friendsid, post.message, io)
+    })
+
     socket.on('leave', function(room){
         if(room === "followers"){
             user.leaveFriendsRoom(socket.decoded.id, socket);
@@ -75,6 +80,24 @@ io.on('connection', async socket => {
     socket.on('removelike', function(postid){
         posts.removePostLike(postid, socket.decoded.id);
         io.emit("removelike", postid.toString())
+    })
+
+    socket.on('join private', async function(otherid){
+        
+        if(socket.decoded.id<otherid){
+            socket.join("private-" + socket.decoded.id + "-" + otherid);
+        } else {
+            socket.join("private-" + otherid + "-" + socket.decoded.id);
+        }
+        await posts.getPreviousPrivatePosts(socket.decoded.id, otherid, socket)
+    })
+
+    socket.on('leave private', async function(otherid){
+        if(socket.decoded.id<otherid){
+            socket.leave("private-" + socket.decoded.id + "-" + otherid);
+        } else {
+            socket.leave("private-" + otherid + "-" + socket.decoded.id);
+        }
     })
 
     socket.on('join', function(room){

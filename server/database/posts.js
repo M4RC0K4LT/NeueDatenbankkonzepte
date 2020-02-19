@@ -4,7 +4,7 @@ const db = require('./redis');
 module.exports = {
 
     async getAll(socket){
-        let postJsonStrings = await db.zrangeAsync(individualPath + 'post', 0, -1);
+        let postJsonStrings = await db.zrangeAsync(individualPath + 'post', 0, -1, "WITHSCORES");
         for(postID of postJsonStrings){
             let postdata = await db.hgetallAsync(individualPath + "post:" + postID)
             if(postdata != null){                
@@ -61,6 +61,44 @@ module.exports = {
                 }
             });
         });
+    },
+
+    async createPrivatePost(sender, friend, message, io) {
+        let smaller_userid = null;
+        let higher_userid = null;
+        if(sender<friend){
+            smaller_userid = sender;
+            higher_userid = friend;
+        }else {
+            smaller_userid = friend;
+            higher_userid = sender;
+        }
+        let now = Date.now();
+        let test = await db.zaddAsync(individualPath + "privateChat:" + smaller_userid + "-" + higher_userid, now, JSON.stringify({"id": sender, "message": message}));
+        io.sockets.in("private-" + smaller_userid + "-" + higher_userid).emit("post", JSON.stringify({"sender": sender, "message": message, "timestamp": now}))
+    },
+
+    async getPreviousPrivatePosts(requestingid, friend, socket){
+        let smaller_userid = null;
+        let higher_userid = null;
+        if(requestingid<friend){
+            smaller_userid = requestingid;
+            higher_userid = friend;
+        }else {
+            smaller_userid = friend;
+            higher_userid = requestingid;
+        }
+        let posts_withtimestamp = await db.zrangeAsync(individualPath + "privateChat:" + smaller_userid + "-" + higher_userid, 0, -1, "WITHSCORES");
+        for (i = 0; i < posts_withtimestamp.length; i++) {
+            let content = JSON.parse(posts_withtimestamp[i]);
+            let sender = content.id;
+            let message = content.message;
+            let timestamp = posts_withtimestamp[i+1];
+            socket.emit("post", JSON.stringify({"sender": sender, "message": message, "timestamp": timestamp}))
+            i++;
+
+        }
+
     },
 
     async getPersonalFeed(user, socket){
