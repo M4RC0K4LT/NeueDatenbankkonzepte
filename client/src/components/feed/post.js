@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Card, CardContent, CardActions, IconButton, Typography, Box } from '@material-ui/core';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import { Favorite as FavoriteIcon } from '@material-ui/icons';
 import { SocketContext } from "../exports";
 
@@ -9,12 +10,47 @@ class Post extends Component {
         super(props);
         this.handleLike = this.handleLike.bind(this);
         this.socket = SocketContext;
-        
+        //this.state = {multerImage: DefaultImg}
     }
 
     handleLike(){
         this.props.handleLike();
     }
+
+    /*setDefaultImage(uploadType) {
+        if (uploadType === "multer") {
+            this.setState({
+                multerImage: DefaultImg
+            });
+        }
+    }
+
+    uploadImage(e, method) {
+        let imageObj = {};
+
+        if (method === "multer") {
+            let imageFormObj = new FormData();
+
+            imageFormObj.append("imageName", "multer-image" + Date.now());
+            imageFormObj.append("imageData", e.target.files[0]);
+
+            this.setState({
+                multerImage: URL.createObjectURL(e.target.files[0])
+            });
+
+            Router.post(`${API_URL}/image/uploadmulter`, imageFormObj)
+                .then((data) => {
+                    if (data.data.success) {
+                        alert("Image successfully uploaded");
+                        this.setDefaultImage("multer");
+                    }
+                })
+                .catch((err) => {
+                    alert("Error");
+                    this.setDefaultImage("multer");
+                });
+        }
+    }*/
 
 
     render() {
@@ -56,7 +92,15 @@ class Post extends Component {
                         <FavoriteIcon style={liked ? {color: "red"} : {color: "inherit"} }/>
                     </IconButton>
                 </CardActions>
+
+                {/* Express serve static files */}
+                {/*<div>
+                    <p>Upload Image</p>
+                    <input type="file" onChange={(e) => this.uploadImage(e,"multer")}/>
+                    <img src={this.state.multerImage} />
+                </div>*/}
             </Card>
+            
         );
     }
 }
