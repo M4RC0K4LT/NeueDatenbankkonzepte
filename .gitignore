@@ -1,1 +1,6 @@
 /node_modules
+server/routes/fileapi.js
+server/database/files.js
+server/public/postPics/RS4.jpg
+server/public/profilePics/RS4.jpg
+server/public/profilePics/RS4.svg

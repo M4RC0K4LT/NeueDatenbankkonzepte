@@ -1,4 +1,6 @@
-const app = require('express')();
+//const app = require('express') ();
+const express = require("express");
+const app = express();
 const http = require('http').createServer(app);
 const bodyParser = require('body-parser');
 const io = require('socket.io')(http);
@@ -12,6 +14,11 @@ const userapi = require("./routes/usersapi");
 
 //const postsapi = require('./routes/postsapi'); -> Not used
 //app.use("/post", postsapi);
+
+// Express serve static files
+app.use('/uploads', express.static('public'));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 const cors = require('cors')
 app.use(cors());
