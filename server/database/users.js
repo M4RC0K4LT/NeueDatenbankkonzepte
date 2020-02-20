@@ -13,60 +13,6 @@ const jwt = require('jsonwebtoken')
 var JWT_KEY = process.env.TOKEN;
 
 module.exports = {
-
-
-  /**
-   * Return all users.
-   * @return {Array} Full of single "UserJSONs". Currently not in use.
-  
-  getAll: () => {
-    return new Promise((resolve, reject) => {
-      db.all(`SELECT user_id, user_name, user_mail FROM users`, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  },
- 
- 
-  /**
-   * Return user by mail. Currently just for existing mail check on user creation/update.
-   * @param {string} mail - Searched mailadress.
-   * @return {JSON} Userdata.
- 
-  findByMail: mail => {
-    return new Promise((resolve, reject) => {
-      db.get(`SELECT * FROM users WHERE user_mail = $mail`, {$mail: mail}, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  },
- 
- 
-  /**
-   * Return user by username. Currently just for existing username check on user creation/update.
-   * @param {string} username - Searched username.
-   * @return {JSON} Userdata.
- 
-  findByName: username => {
-    return new Promise((resolve, reject) => {
-      db.get(`SELECT * FROM users WHERE user_name = $username`, {$username: username}, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  },
- 
  
   /**
    * Return user by ID.
@@ -131,7 +77,7 @@ module.exports = {
           return reject(err);
         }
         else {
-          if (result == null) {
+          if (result[0] == null) {
             return reject({ "error": "Ungültige Eingaben" });
           } else {
             var id = result[0];
@@ -329,71 +275,4 @@ module.exports = {
       })
     })
   },
-
-
-  /**
-   * Update existing user data by ID.
-   * @param {string} id - UserID to change.
-   * @param {JSON} jsonObject - Updated Values.
-   * @return {JSON} Updated UserData.
-  update: (id, jsonObject) => {  
-    var password = bcrypt.hashSync(jsonObject.password, 8);
-    return new Promise((resolve, reject) => {
-        id = parseInt(id);
-        
-        db.run(
-            
-          `UPDATE users SET user_name = $name, user_mail = $mail, user_password = $password WHERE user_id = $id`, 
-          {
-            $name: jsonObject.name,
-            $mail: jsonObject.mail,
-            $password: password,
-            $token: jsonObject.token,
-            $id: id
-          },
-          function (err) {
-            if (err) {
-              reject({"error": err.message});
-            }
-            db.get(`SELECT * FROM users WHERE user_id = $id`, {$id: id}, (err, result) => {
-              if (err) {
-                reject({"error": err.message});
-              } else {
-                resolve(result);
-              }
-            });
-          }
-        )
-    });
-  },
- 
- 
-  /**
-   * Remove user by ID. Currently not in use
-   * @param {string} id - UserID to remove correct oject.
-   * @return {Boolean} Success - yes or no.
- 
-  remove: id => {
-    return new Promise((resolve, reject) => {
-        id = parseInt(id);
-        db.get(`SELECT * FROM users WHERE user_id = $id`, {$id: id}, (err, result) => {
-            if (err) {
-              reject({"error": err.message});
-            } else {
-              if (result != null){
-                db.run(          
-                    `DELETE FROM users WHERE user_id = $id`, {$id: id}, (err, result) => {
-                      if (err) {
-                        reject(false);
-                      } else {
-                        resolve(true);
-                      }
-                });
-              } else{
-                  reject({"error": "Kein gültiger User"});
-              }
-            }
-          });      
-    });
-  }, */
 };

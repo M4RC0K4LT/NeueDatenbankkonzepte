@@ -17,7 +17,6 @@ class PrivateChat extends Component {
         <div>    
             <Typography variant="h5" align="center">Chat with your friend</Typography>
             <br></br>
-            <Divider></Divider>
             <br></br>
             <FriendsChat
                 friendsid={this.props.match.params.id}>

@@ -68,6 +68,7 @@ class ProfileFeed extends Component {
 
   componentWillUnmount(){
     var userid = this.props.id;
+    this.setState({ response: [] })
     this.socket.emit("leave", userid)
   }
 

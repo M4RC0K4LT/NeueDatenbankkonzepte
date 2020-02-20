@@ -1,6 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom'
-import { Typography, AppBar, CssBaseline, Drawer, Hidden, IconButton, Toolbar, useTheme, withStyles, List, ListItem, ListItemText, Button } from '@material-ui/core';
+import { Typography, AppBar, CssBaseline, Link, Drawer, Hidden, IconButton, Toolbar, useTheme, withStyles, List, ListItem, ListItemText, Button } from '@material-ui/core';
 import { MenuOutlined as MenuOutlinedIcon } from '@material-ui/icons';
 import useStyles from './useStyles';
 
@@ -48,12 +47,12 @@ function ResponsiveDrawer(props) {
                             <MenuOutlinedIcon />
                         </IconButton>
                     </Hidden>
-                    <Typography variant="h5" className={classes.title}><Link style={{ textDecoration: "none", color: "inherit" }} to="/">Tweety</Link></Typography>
+                    <Typography variant="h5" className={classes.title}><Link style={{ textDecoration: "none", color: "inherit" }} href="/">Tweety</Link></Typography>
                     <Hidden smDown implementation="css">
                         <Toolbar>
-                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/feed">Feed</Link></Typography>
-                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/personal">Personal</Link></Typography> 
-                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/profile">Profile</Link></Typography>    
+                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} href="/feed">Feed</Link></Typography>
+                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} href="/personal">Personal</Link></Typography> 
+                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} href="/profile">Profile</Link></Typography>    
                             {logout}                        
                         </Toolbar>
                         
@@ -78,19 +77,19 @@ function ResponsiveDrawer(props) {
                     }}
                 >
                     <List>
-                        <ListItem button key={1} component={Link} to={"/feed"} >
+                        <ListItem button key={1} component={Link} style={{ color: "inherit" }} href={"/feed"} >
                             {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Feed"} />
                         </ListItem>
                     </List>
                     <List>
-                        <ListItem button key={2} component={Link} to={"/personal"} >
+                        <ListItem button key={2} component={Link} style={{ color: "inherit" }} href={"/personal"} >
                             {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Personal"} />
                         </ListItem>
                     </List>
                     <List>
-                        <ListItem button key={3} component={Link} to={"/profile"} >
+                        <ListItem button key={3} component={Link} style={{ color: "inherit" }} href={"/profile"} >
                             {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Profil"} />
                         </ListItem>
@@ -104,7 +103,7 @@ function ResponsiveDrawer(props) {
 
             </nav>
 
-            {/** Website content next to drawer (passed as props) */}
+            {/** Website content next href drawer (passed as props) */}
             <main className={classes.content}>
                 <div className={classes.toolbar} />
                 {content}
