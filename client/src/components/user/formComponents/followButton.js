@@ -58,6 +58,8 @@ class FollowButton extends Component {
         /*getUserInformation(this.props.match.params.id).then(data => {
             if (data.length < 1 || data.request === "failed") {
                 console.log(data.error)
+            } else if (data.posts === 0) {
+                data.posts = "Keine Posts"
             }
             this.setState({ userdata: data })
         })*/

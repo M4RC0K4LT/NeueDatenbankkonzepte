@@ -4,3 +4,6 @@ server/database/files.js
 server/public/postPics/RS4.jpg
 server/public/profilePics/RS4.jpg
 server/public/profilePics/RS4.svg
+server/database/t1_files.js
+server/routes/busboyapi.js
+server/routes/t1_fileapi.js

@@ -36,7 +36,6 @@ class Profile extends Component {
         let tokenuserid = decoded.id;
 
         let followbutton = null;
-        console.log(this.state.userdata)
         if ((userid != null) && (userid != tokenuserid) && (this.state.userdata.request != "failed")) {
             followbutton = (
                 <FollowButton
@@ -56,17 +55,17 @@ class Profile extends Component {
                 <Typography variant="h4" align="center">What &nbsp;&nbsp;<b>{this.state.userdata.username}</b>&nbsp;&nbsp; had to show</Typography>
                 <br></br><br></br>
                 <Grid container spacing={1} justify="center">
-                    <Grid item xs={2}>
+                    <Grid item xs={3}>
                         <Paper align="center">
                         <Typography variant="subtitle1">Posts: {this.state.userdata.posts}</Typography>
                         </Paper>
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={3}>
                         <Paper align="center">
                             <Typography variant="subtitle1">Followers: {this.state.userdata.followers}</Typography>
                         </Paper>
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={3}>
                         <Paper align="center">
                             <Typography variant="subtitle1">Following: {this.state.userdata.following}</Typography>
                         </Paper>
