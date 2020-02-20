@@ -63,7 +63,7 @@ module.exports = {
         });
     },
 
-    async createPrivatePost(sender, friend, message, io) {
+    async createPrivatePost(sender, friend, message, io, otheruserinchat) {
         let smaller_userid = null;
         let higher_userid = null;
         if(sender<friend){
@@ -74,6 +74,11 @@ module.exports = {
             higher_userid = sender;
         }
         let now = Date.now();
+        let user1chats = await db.zaddAsync(individualPath + "UserChats:" + sender, friend, now);
+        let user2chats = await db.zaddAsync(individualPath + "UserChats:" + friend, sender, now);
+        if(!otheruserinchat){
+            await db.saddAsync(individualPath + "UserChatsUnread:" + friend, sender)
+        }
         let test = await db.zaddAsync(individualPath + "privateChat:" + smaller_userid + "-" + higher_userid, now, JSON.stringify({"id": sender, "message": message}));
         io.sockets.in("private-" + smaller_userid + "-" + higher_userid).emit("post", JSON.stringify({"sender": sender, "message": message, "timestamp": now}))
     },

@@ -4,6 +4,7 @@ import { useStyles, SocketContext } from '../exports'
 import { Chat as ChatIcon } from '@material-ui/icons';
 import { getFriends } from "../../api/exports";
 import {  Redirect, useHistory } from 'react-router-dom';
+import socket from '../other/SocketContext';
 
 const StyledBadge = withStyles(theme => ({
     badge: {
@@ -53,13 +54,27 @@ class ShowFollowedUsers extends Component {
     }
     
     componentDidMount(){
-        
-        getFriends().then(data => {
-            if(data.length<1 || data.request === "failed"){
-                console.log(data.error)
-            }else {
-                this.setState({ allfriends: data })
+        socket.emit("getMyFriends");
+
+        this.socket.on("returnFriend", (rawData => {
+            let { allfriends } = this.state;
+            var previous = allfriends;
+            var newfriend = JSON.parse(rawData);
+            previous.unshift(newfriend)
+            this.setState({ allfriends: previous });
+        }))
+
+        this.socket.on("removeFriend", (id) => {
+            let { allfriends } = this.state;
+            let todelete = null;
+            for (var i = 0; i < allfriends.length; i++) {
+                if(allfriends[i].id == id){
+                  todelete = i;
+                  break
+                }
             }
+            delete allfriends[todelete];
+            this.setState({ allfriends: allfriends });
         })
 
         this.socket.on("goesonline", (rawData => {
@@ -83,6 +98,10 @@ class ShowFollowedUsers extends Component {
                 }
             }
         }))
+
+        this.socket.on('error', (err) => {
+            console.log(err);
+          });
     }
 
     render() {
@@ -114,8 +133,11 @@ class ShowFollowedUsers extends Component {
                             <ListItemText id={value.id} primary={value.username} />
                             <ListItemSecondaryAction>
                                 <IconButton component={Link} href={"/private/" + value.id}>
-                                <ChatIcon></ChatIcon>
+                                <Badge color="primary" invisible={value.newmessage == 1 ? false : true}>
+                                    <ChatIcon></ChatIcon>
+                                </Badge>
                                 </IconButton>
+                                {value.newmessage}
                             </ListItemSecondaryAction>
                         </ListItem>
                         );

@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const io = require('socket.io')(http);
 require("dotenv").config()
 
-individualPath = "gruppe-kann-nix-51-";
+individualPath = "gruppe-kann-nix-52-";
 
 const db = require('./database/redis');
 
@@ -60,7 +60,20 @@ io.on('connection', async socket => {
 
     socket.on("new privatepost", async function(postAsJson){
         const post = JSON.parse(postAsJson);
-        await posts.createPrivatePost(socket.decoded.id, post.friendsid, post.message, io)
+        let smaller_userid = socket.decoded.id;
+        let higher_userid = post.friendsid;
+        if(socket.decoded.id>post.friendsid){
+            smaller_userid = post.friendsid;
+            higher_userid = socket.decoded.id
+        }
+        let room = io.sockets.adapter.rooms["private-" + smaller_userid + "-" + higher_userid];
+        let other_user_online = false;
+        if(room != null){
+            if(room.length == 1){
+                other_user_online = true;
+            }
+        }
+        await posts.createPrivatePost(socket.decoded.id, post.friendsid, post.message, io, other_user_online)
     })
 
     socket.on('leave', function(room){
@@ -119,7 +132,25 @@ io.on('connection', async socket => {
         console.log(socket.decoded.name + " joined room: " + room)
     })
 
+    socket.on("getMyFriends", () => {
+        user.getFriends(socket.decoded.id, socket)
+    })
 
+    socket.on("follow", (id) => {
+        user.follow(socket.decoded.id, id, socket, io);
+    })
+
+    socket.on("unfollow", (id) => {
+        user.unfollow(socket.decoded.id, id, socket, io)
+    })
+
+    socket.on("isfollowing", (id) => {
+        user.isfollowing(socket.decoded.id, id, socket)
+    })
+
+    socket.on("getUserData", (id) => {
+        user.findById(id, socket)
+    })
 
     socket.on('disconnect', async (reason) => {
         console.log(`User ${socket.decoded.name} has left the main socket. -> ${reason}.`);

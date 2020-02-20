@@ -20,23 +20,16 @@ module.exports = {
    * @return {JSON} Userdata.
    */
  
-  findById: (id) => {
-    return new Promise(async (resolve, reject) => {
-      try{
-        let username = await db.hgetAsync(individualPath + "user:" + id, "username");
-        if(username == null){
-          return(reject({"error": "Kein User"}))
-        }
-        let count_posts = await db.zcountAsync(individualPath + 'postByUserID:' + id, -Infinity, +Infinity);
-        let count_followers = await db.scardAsync(individualPath + "followers:" + id);
-        let count_following = await db.scardAsync(individualPath + "following:" + id);
-        let daten = {"username": username, "posts": count_posts, "followers": count_followers, "following": count_following };
-        resolve(daten);
-      } catch(err){
-        reject(err)
-      }
-      
-    });
+  async findById(id, socket){
+    let username = await db.hgetAsync(individualPath + "user:" + id, "username");
+    if(username == null){
+      return(null)
+    }
+    let count_posts = await db.zcountAsync(individualPath + 'postByUserID:' + id, -Infinity, +Infinity);
+    let count_followers = await db.scardAsync(individualPath + "followers:" + id);
+    let count_following = await db.scardAsync(individualPath + "following:" + id);
+    let daten = {"id": id, "username": username, "posts": count_posts, "followers": count_followers, "following": count_following };
+    socket.emit("getUserDataReturn", JSON.stringify(daten));
   },
  
  
@@ -45,22 +38,15 @@ module.exports = {
    * @param {string} token - Searched Token.
    * @return {JSON} Userdata with ! passwordhash !. 
    */
-  async getFriends(token){
-    let id = null;
-    jwt.verify(token, JWT_KEY, async (err, userid) => {
-      if(err){
-      }
-      id=userid.id;
-    })
+  async getFriends(id, socket){
     let friendsids = await db.smembersAsync(individualPath + "following:" + id)
-    let friends = []
     for(friend of friendsids){
       let frienddata = await db.hgetAsync(individualPath + "user:" + friend, "username")
       let online = await db.sismemberAsync(individualPath + "onlineUsers", friend);
-      let data = {"id": friend, "username": frienddata, "online": online}
-      friends.push(data)
+      let unreadchat = await db.sismemberAsync(individualPath + "UserChatsUnread:" + id, friend)
+      let data = {"id": friend, "username": frienddata, "online": online, "newmessage": unreadchat}
+      socket.emit("returnFriend", JSON.stringify(data));
     }
-    return friends
   },
  
  
@@ -107,21 +93,15 @@ module.exports = {
    * @param {string} followed_user - User(ID) that should be followed.
    * @return {}  
    */
-  follow(acting_user, followed_user) {
-
-    return new Promise((resolve, reject) => {
-      db.sadd(individualPath + "following:" + acting_user, followed_user, function (err, res) {
-        if (err) {
-          return reject(err)
-        }
-        db.sadd(individualPath + "followers:" + followed_user, acting_user, function (err, res) {
-          if (err) {
-            return reject(err)
-          }
-          resolve(res)
-        })
-      })
-    })
+  async follow(acting_user, followed_user, socket, io) {
+    await db.saddAsync(individualPath + "following:" + acting_user, followed_user);
+    await db.saddAsync(individualPath + "followers:" + followed_user, acting_user);
+    let frienddata = await db.hgetAsync(individualPath + "user:" + followed_user, "username")
+    let online = await db.sismemberAsync(individualPath + "onlineUsers", followed_user);
+    let unreadchat = await db.sismemberAsync(individualPath + "UserChatsUnread:" + acting_user, followed_user)
+    let data = {"id": followed_user, "username": frienddata, "online": online, "newmessage": unreadchat}
+    socket.emit("returnFriend", JSON.stringify(data));
+    io.emit("addfollower", followed_user)
   },
 
   /**
@@ -130,21 +110,12 @@ module.exports = {
    * @param {string} followed_user - User(ID) that should be followed.
    * @return {}  
    */
-  unfollow(acting_user, followed_user) {
+  async unfollow(acting_user, followed_user, socket, io) {
 
-    return new Promise((resolve, reject) => {
-      db.srem(individualPath + "following:" + acting_user, followed_user, function (err, res) {
-        if (err) {
-          return reject(err)
-        }
-        db.srem(individualPath + "followers:" + followed_user, acting_user, function (err, res) {
-          if (err) {
-            return reject(err)
-          }
-          resolve(res)
-        })
-      })
-    })
+    await db.sremAsync(individualPath + "following:" + acting_user, followed_user);
+    await db.sremAsync(individualPath + "followers:" + followed_user, acting_user);
+    socket.emit("removeFriend", followed_user);
+    io.emit("removefollower", followed_user)
   },
 
   /**
@@ -153,16 +124,13 @@ module.exports = {
    * @param {string} watched_user - User(ID) that should be followed.
    * @return {int} 1 or 0 (true or false) 
    */
-  isfollowing(acting_user, watched_user) {
-
-    return new Promise((resolve, reject) => {
-      db.sismember(individualPath + "following:" + acting_user, watched_user, function (err, res) {
-        if (err) {
-          return reject(err)
-        }
-        resolve(res)
-      })
-    })
+  async isfollowing(acting_user, watched_user, socket) {
+    let follows_int = await db.sismemberAsync(individualPath + "following:" + acting_user, watched_user)
+    let follows = false;
+    if(follows_int == 1){
+      follows = true;
+    }
+    socket.emit("isfollowingReturn", follows)
   },
 
   /**

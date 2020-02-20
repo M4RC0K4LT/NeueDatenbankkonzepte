@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Container, withStyles, Typography, Grid, Paper, Avatar } from '@material-ui/core';
-import { useStyles, ProfileFeed, FollowButton } from '../components/exports';
-import { getUserInformation } from "../api/exports";
+import { useStyles, ProfileFeed, FollowButton, SocketContext, ProfilePicture } from '../components/exports';
 
 
 
@@ -18,6 +17,7 @@ class Profile extends Component {
             userdata: {},
             myid: tokenuserid
         };
+        this.socket = SocketContext;
     }
 
     componentDidMount() {
@@ -25,14 +25,26 @@ class Profile extends Component {
         if(id == null){
             id = this.state.myid
         }
-        getUserInformation(id).then(data => {
-            if (data.length < 1 || data.request === "failed") {
-                console.log(data.error)
-            } else if (data.posts === 0) {
-                data.posts = "Keine Posts"
+        this.socket.emit("getUserData", id);
+        this.socket.on("getUserDataReturn", (rawData) => {
+            var newdata = JSON.parse(rawData);
+            console.log(newdata)
+            this.setState({ userdata: newdata });
+        })
+        this.socket.on("addfollower", (id) => {
+            const { userdata } = this.state;
+            if(userdata.id == id){
+                userdata.followers = userdata.followers+1;
+                this.setState({ userdata: userdata });
             }
-
-            this.setState({ userdata: data })
+            
+        })
+        this.socket.on("removefollower", (id) => {
+            const { userdata } = this.state;
+            if(userdata.id == id){
+                userdata.followers = userdata.followers-1;
+                this.setState({ userdata: userdata });
+            }
         })
     }
 
@@ -59,7 +71,7 @@ class Profile extends Component {
 
         return (
             <Container >
-                <Avatar className={classes.ProfileAvatar} src="https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg"></Avatar>
+                <ProfilePicture></ProfilePicture>
                 <Typography variant="h4" align="center">&nbsp;&nbsp;<b>{this.state.userdata.username}</b>&nbsp;&nbsp;</Typography>
                 <br></br><br></br>
                 <Grid container spacing={1} justify="center">

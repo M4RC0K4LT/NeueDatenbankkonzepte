@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles, Button } from '@material-ui/core';
-import { useStyles } from "../../exports";
+import { useStyles, SocketContext } from "../../exports";
 import { postFollow, postUnfollow, postIsFollowing, getUserInformation } from "../../../api/exports";
 
 /** LoginFields Component */
@@ -14,60 +14,36 @@ class FollowButton extends Component {
             userdata: {},
         };
         
-        this.handleClick = this.handleClick.bind(this)     
+        this.handleClick = this.handleClick.bind(this);
+        this.socket = SocketContext;
     }
 
     /** Change values (onKeyboardInput) of controlled TextField components */
     handleClick() {
-        var { myid, watchedid } = this.props;
+        var {  watchedid } = this.props;
         if(this.state.follow === false){
-            postFollow(myid, watchedid).then(data => {
-                if(data.length<1 || data.request === "failed"){
-                    //this.setState({ open: true, snackcolor: "error", message: data.error, disablefields: false })
-                    console.log("an error occured")
-                }else {
-                    this.setState({ follow: true, color: "darkred", fontSize: 16 })
-                }
-            })
+            this.socket.emit("follow", watchedid);
+            this.setState({ follow: true, color: "darkred", fontSize: 16 });
         } else {
-            postUnfollow(myid, watchedid).then(data => {
-                if(data.length<1 || data.request === "failed"){
-                    //this.setState({ open: true, snackcolor: "error", message: data.error, disablefields: false })
-                    console.log("an error occured")
-                }else {
-                    this.setState({ follow: false, color: "green", fontSize: 20 })
-                }
-            })
+            this.socket.emit("unfollow", watchedid);
+            this.setState({ follow: false, color: "green", fontSize: 16 });
         }
     }
 
     componentDidMount(){
-        var { myid, watchedid } = this.props;
-        postIsFollowing(myid, watchedid).then(data => {
-            if(data.length<1 || data.request === "failed"){
-                //this.setState({ open: true, snackcolor: "error", message: data.error, disablefields: false })
-                console.log("an error occured")
-            }else {
-                if(data.result === "true"){
-                    this.setState({ follow: true, color: "darkred", fontSize: 16 })
-                }else {
-                    this.setState({ follow: false, color: "green", fontSize: 20 })
-                }
+        var { watchedid } = this.props;
+        this.socket.emit("isfollowing", watchedid);
+        this.socket.on("isfollowingReturn", (bool => {
+            if(bool == true){
+                this.setState({ follow: true, color: "darkred", fontSize: 16 })
+            } else {
+                this.setState({ follow: false, color: "green", fontSize: 16 });
             }
-        });
-        /*getUserInformation(this.props.match.params.id).then(data => {
-            if (data.length < 1 || data.request === "failed") {
-                console.log(data.error)
-            } else if (data.posts === 0) {
-                data.posts = "Keine Posts"
-            }
-            this.setState({ userdata: data })
-        })*/
+        }))
     }
 
     render(){
         const { follow } = this.state;
-        // const { userdata } = this.state;
 
         return (
             <Button

@@ -16,6 +16,7 @@ import ShowFollowedUsers from './user/showFollowedUsers';
 import NewPrivateMessage from './chat/newPrivateMessage';
 import FriendsChat from './chat/friendsChat';
 import SnackbarMessage from './other/snackbarmessage';
+import ProfilePicture from './user/profilePicture';
 
 /** Central components-ExportFile */
 export {
@@ -36,5 +37,6 @@ export {
     ShowFollowedUsers,
     NewPrivateMessage,
     FriendsChat,
-    SnackbarMessage
+    SnackbarMessage,
+    ProfilePicture
 }

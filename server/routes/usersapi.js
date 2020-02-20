@@ -12,21 +12,11 @@ const router = express.Router();
 //const auth = require("./auth");
 const users = require("../database/users");
 
-/** GET: Current User`s data */
-router.get('/getdata/:id', async function(request, response) {
-    try {
-        const userinformation = await users.findById(request.params.id);
-        return response.status(200).send(userinformation);      
-    } catch(err){
-        let data = Object.assign({"request": "failed"}, err)
-        response.status(500).send(data);
-    }
-});
 
 /** GET: Current User`s data
 router.get('/all', auth, async function(request, response) {
     try {
-        const usersdata = await users.getAll();
+        const usersdata = await users.getAll()
         return response.status(200).send(usersdata);
     } catch(err){
         let data = Object.assign({"request": "failed"}, err)
@@ -47,48 +37,6 @@ router.post('/login', async function(request, response) {
     }
 });
 
-/** POST: Follow User */
-router.post('/follow', async function(request, response) {
-    try {
-        const follow = await users.follow(request.body.myid, request.body.otherid);
-        let data = Object.assign({"request": "successful"}, follow)
-        response.status(200).send(data);       
-    } catch (err) {
-        let data = Object.assign({"request": "failed"}, err)
-        response.status(500).send(data);
-    }
-});
-
-/** POST: Unfollow User */
-router.post('/unfollow', async function(request, response) {
-    try {
-        const unfollow = await users.unfollow(request.body.myid, request.body.otherid);
-        let data = Object.assign({"request": "successful"}, unfollow)
-        response.status(200).send(data);       
-    } catch (err) {
-        let data = Object.assign({"request": "failed"}, err)
-        response.status(500).send(data);
-    }
-});
-
-/** POST: Check if following */
-router.post('/isfollowing', async function(request, response) {
-    try {
-        const isfollowing = await users.isfollowing(request.body.myid, request.body.otherid);
-        var res = {};
-        if(isfollowing === 1){
-            res = {"result": "true"}
-        }else{
-            res = {"result": "false"}
-        }
-        let data = Object.assign({"request": "successful"}, res)
-        response.status(200).send(data);       
-    } catch (err) {
-        let data = Object.assign({"request": "failed"}, err)
-        response.status(500).send(data);
-    }
-});
-
 /** POST: Register new User */
 router.post('/register', async function(request, response) {
     try {
@@ -97,21 +45,6 @@ router.post('/register', async function(request, response) {
         return response.status(201).send(data);
     }
     catch (err) {
-        let data = Object.assign({"request": "failed"}, err)
-        response.status(500).send(data);
-    }
-});
-
-/** POST: Register new User */
-router.get('/getFriends', async function(request, response) {
-    try {
-        const authHeader = request.headers["authorization"];
-        const token = authHeader && authHeader.split(" ")[1];
-        const friends = await users.getFriends(token);       
-        return response.status(201).send(friends);
-    }
-    catch (err) {
-        console.log(err)
         let data = Object.assign({"request": "failed"}, err)
         response.status(500).send(data);
     }
