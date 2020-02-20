@@ -55,7 +55,9 @@ class Profile extends Component {
         let userid = this.props.match.params.id
 
         let followbutton = null;
+        let own = true;
         if ((userid != null) && (userid != this.state.myid) && (this.state.userdata.request != "failed")) {
+            own = false;
             followbutton = (
                 <FollowButton
                     myid={this.state.myid}
@@ -71,7 +73,7 @@ class Profile extends Component {
 
         return (
             <Container >
-                <ProfilePicture></ProfilePicture>
+                <ProfilePicture userid={userid} own={own}></ProfilePicture>
                 <Typography variant="h4" align="center">&nbsp;&nbsp;<b>{this.state.userdata.username}</b>&nbsp;&nbsp;</Typography>
                 <br></br><br></br>
                 <Grid container spacing={1} justify="center">

@@ -99,6 +99,28 @@ class ShowFollowedUsers extends Component {
             }
         }))
 
+        this.socket.on("newmessageread", (id => {
+            let { allfriends } = this.state;
+            for (var i = 0; i < allfriends.length; i++) {
+                if(allfriends[i].id == id){
+                  allfriends[i].newmessage = 0;
+                  this.setState({ allfriends });
+                  break
+                }
+            }
+        }))
+
+        this.socket.on("newmessage", (id => {
+            let { allfriends } = this.state;
+            for (var i = 0; i < allfriends.length; i++) {
+                if(allfriends[i].id == id){
+                  allfriends[i].newmessage = 1;
+                  this.setState({ allfriends });
+                  break
+                }
+            }
+        }))
+
         this.socket.on('error', (err) => {
             console.log(err);
           });
@@ -127,17 +149,16 @@ class ShowFollowedUsers extends Component {
                                     variant="dot"
                                     invisible={!value.online}
                                 >
-                                    <Avatar src="https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg" />
+                                    <Avatar src={window.$apiroute + "/profilePics/user_" + value.id + ".png"} />
                                 </StyledBadge>
                             </ListItemAvatar>
                             <ListItemText id={value.id} primary={value.username} />
                             <ListItemSecondaryAction>
                                 <IconButton component={Link} href={"/private/" + value.id}>
-                                <Badge color="primary" invisible={value.newmessage == 1 ? false : true}>
+                                <Badge variant="dot" color="primary" invisible={value.newmessage == 1 ? false : true}>
                                     <ChatIcon></ChatIcon>
                                 </Badge>
                                 </IconButton>
-                                {value.newmessage}
                             </ListItemSecondaryAction>
                         </ListItem>
                         );

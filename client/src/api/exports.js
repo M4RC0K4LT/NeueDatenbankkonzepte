@@ -5,7 +5,7 @@ import postUnfollow from './postUnfollow';
 import postIsFollowing from './postIsFollowing';
 import getFriends from './getFriends';
 import getUserInformation from './getUserInformation';
-
+import postProfilePicture from './postProfilePicture';
 
 /** Central API-Requests Export-File */
 export {
@@ -15,5 +15,6 @@ export {
     postUnfollow,
     postIsFollowing,
     getFriends,
-    getUserInformation
+    getUserInformation,
+    postProfilePicture
 }

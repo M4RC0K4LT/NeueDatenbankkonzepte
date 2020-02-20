@@ -78,9 +78,15 @@ module.exports = {
         let user2chats = await db.zaddAsync(individualPath + "UserChats:" + friend, sender, now);
         if(!otheruserinchat){
             await db.saddAsync(individualPath + "UserChatsUnread:" + friend, sender)
+            io.sockets.in("privatemessages-" + friend).emit("newmessage", sender);
         }
         let test = await db.zaddAsync(individualPath + "privateChat:" + smaller_userid + "-" + higher_userid, now, JSON.stringify({"id": sender, "message": message}));
         io.sockets.in("private-" + smaller_userid + "-" + higher_userid).emit("post", JSON.stringify({"sender": sender, "message": message, "timestamp": now}))
+    },
+
+    async setPrivateMessagesRead(friend, socket){
+        await db.sremAsync(individualPath + "UserChatsUnread:" + socket.decoded.id, friend)
+        socket.emit("newmessageread", friend);
     },
 
     async getPreviousPrivatePosts(requestingid, friend, socket){

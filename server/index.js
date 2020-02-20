@@ -4,88 +4,23 @@ const app = express();
 const http = require('http').createServer(app);
 const bodyParser = require('body-parser');
 const io = require('socket.io')(http);
-const multer = require('multer');
 require("dotenv").config()
-
-individualPath = "gruppe-kann-nix-52-";
-
-const db = require('./database/redis');
+const cors = require('cors')
+app.use(cors());
+app.options('*', cors())
 
 const userapi = require("./routes/usersapi");
 
-//const postsapi = require('./routes/postsapi'); -> Not used
-//app.use("/post", postsapi);
+app.use(bodyParser.json());
+app.use("/user", userapi);
+
+individualPath = "gruppe-kann-nix-52-";
 
 // Express serve static files
 app.use('/profilePics', express.static(__dirname + '/public/profilePics'));
 app.use('/postPics', express.static(__dirname + '/public/postPics'))
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
-
-const handleError = (err, res) => {
-    res
-        .status(500)
-        .contentType("text/plain")
-        .end("Something went wrong");
-};
-
-const postStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb (null, "./public/postPics");
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    }
-})
-
-const profileStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb (null, "./public/profilePics");
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    }
-})
-
-const postPicPath = multer({storage: postStorage});
-
-const profilePicPath = multer({storage: profileStorage});
-
-
-app.post('/postPicForm', postPicPath.single('postPic'), function (req, res) {
-    res.send(req.file);
-    // req.file is postPic file
-    // req.body hold text fields, if there were any
-})
-
-app.post('/profilePicForm', profilePicPath.single('profilePic'), function (req, res) {
-    res.send(req.file);
-    // req.file is postPic file
-    // req.body hold text fields, if there were any
-})
-
-/*app.post('/postPic', upload.array('photos', 12), function (req, res, next) {
-    // req.files is array of 'photos files
-    // req.body contain text fields, if there were any
-})*/
-
-/*var cpUpload = upload.fields([{ name: 'postPic', maxCount: 1 }])
-app.post('/postPic', cpUpload, function (req, res, next) {
-    // req.files is object (String -> Array) where fieldname is key and value is array of files
-    // e.g. req.files['gallery'] -> Array
-    // e.g. req.files['avatar'][0] -> File
-    // req.body contain text fields, if there were any
-})*/
-
-
-
-const cors = require('cors')
-app.use(cors());
-app.options('*', cors())
-
-app.use(bodyParser.json());
-app.use("/user", userapi);
-
 
 app.get('/', (req, res) => {
     res.send('It works!');
@@ -103,6 +38,7 @@ io.on('connection', async socket => {
     console.log(`User ${socket.decoded.name} connected to main socket.`);
     await user.setOnline(socket.decoded.id);
     io.emit("goesonline", socket.decoded.id)
+    socket.join("privatemessages-" + socket.decoded.id)
 
     // Wait for post event
     socket.on('new globalpost', async postAsJson => {
@@ -128,7 +64,7 @@ io.on('connection', async socket => {
         let room = io.sockets.adapter.rooms["private-" + smaller_userid + "-" + higher_userid];
         let other_user_online = false;
         if(room != null){
-            if(room.length == 1){
+            if(room.length > 1){
                 other_user_online = true;
             }
         }
@@ -161,6 +97,7 @@ io.on('connection', async socket => {
         } else {
             socket.join("private-" + otherid + "-" + socket.decoded.id);
         }
+        await posts.setPrivateMessagesRead(otherid, socket)
         await posts.getPreviousPrivatePosts(socket.decoded.id, otherid, socket)
     })
 
@@ -180,7 +117,7 @@ io.on('connection', async socket => {
         }
 
         if(room === "personal"){
-            user.getToFriendsRoom(socket.decoded.id, socket)
+            user.getToFriendsRoom(socket.decoded.id, socket);
             posts.getPersonalFeed(socket.decoded.id, socket);
         }
 
