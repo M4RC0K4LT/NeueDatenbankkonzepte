@@ -7,7 +7,7 @@ bluebird.promisifyAll(redis.Multi.prototype);
 const redisClient = redis.createClient({
 	url: "rediss://default:gai689ypykqx0fjj@dhbw-wwi-ndbk-do-user-883655-0.db.ondigitalocean.com:25061",
 	tls: {},	
-	return_buffers : true
+	//return_buffers : true
 });
 
 /**redisClient.incr(individualPath + 'id', function(err, id) {
