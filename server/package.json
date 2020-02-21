@@ -16,6 +16,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
+    "linkifyjs": "^2.1.9",
     "multer": "^1.4.2",
     "node-static": "^0.7.11",
     "redis": "^2.8.0",

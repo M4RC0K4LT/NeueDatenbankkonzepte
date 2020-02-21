@@ -17,6 +17,7 @@ import NewPrivateMessage from './chat/newPrivateMessage';
 import FriendsChat from './chat/friendsChat';
 import SnackbarMessage from './other/snackbarmessage';
 import ProfilePicture from './user/profilePicture';
+import HashtagFeedPosts from './feed/hashtag_feed';
 
 /** Central components-ExportFile */
 export {
@@ -38,5 +39,6 @@ export {
     NewPrivateMessage,
     FriendsChat,
     SnackbarMessage,
-    ProfilePicture
+    ProfilePicture,
+    HashtagFeedPosts
 }

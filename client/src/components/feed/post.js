@@ -8,14 +8,14 @@ import * as linkify from 'linkifyjs';
 import hashtag from 'linkifyjs/plugins/hashtag';
 
 var linkifyOptions = {
-        className: "linkified",
-        formatHref: function (href, type) {
-            if (type === 'hashtag') {
-            href = 'http://localhost/hashtags/' + href.substring(1);
-            }
-            return href;
+    className: "linkified",
+    formatHref: function (href, type) {
+        if (type === 'hashtag') {
+        href = 'http://localhost/hashtags/' + href.substring(1);
         }
+        return href;
     }
+}
 
 hashtag(linkify);
 
@@ -39,6 +39,7 @@ class Post extends Component {
             <Card variant="outlined" style={{ marginBottom: ".5rem" }}>
                 <CardContent>
                     {test.map((data, i) => {
+                        console.log(data)
                         if (data.length == 0) {
                             if (!(i == test.length - 1) && (test[i + 1].length == 0)) {
                                 return

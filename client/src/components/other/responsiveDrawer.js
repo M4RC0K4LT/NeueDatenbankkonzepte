@@ -52,6 +52,7 @@ function ResponsiveDrawer(props) {
                         <Toolbar>
                             <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} href="/feed">Feed</Link></Typography>
                             <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} href="/personal">Personal</Link></Typography> 
+                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} href="/hashtags">Tags</Link></Typography> 
                             <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} href="/profile">Profile</Link></Typography>    
                             {logout}                        
                         </Toolbar>
@@ -89,7 +90,13 @@ function ResponsiveDrawer(props) {
                         </ListItem>
                     </List>
                     <List>
-                        <ListItem button key={3} component={Link} style={{ color: "inherit" }} href={"/profile"} >
+                        <ListItem button key={3} component={Link} style={{ color: "inherit" }} href={"/hashtags"} >
+                            {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
+                            <ListItemText primary={"Tags"} />
+                        </ListItem>
+                    </List>
+                    <List>
+                        <ListItem button key={4} component={Link} style={{ color: "inherit" }} href={"/profile"} >
                             {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Profil"} />
                         </ListItem>

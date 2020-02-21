@@ -22,10 +22,7 @@ module.exports = {
             /** Listener for GlobalFeed Posts */
             socket.on('new globalpost', async postAsJson => {
                 const post = JSON.parse(postAsJson);
-                var id = await posts.create(post);
-                let newpost = Object.assign({"postid": id.toString(), "liked": false, "likes": "0"}, post);
-                io.sockets.in("global").emit('post', JSON.stringify(newpost));
-                io.sockets.in(socket.decoded.id).emit('post', JSON.stringify(newpost));
+                await posts.create(post, socket, io);
             });
     
             /** Listener for new private messages */
@@ -92,6 +89,21 @@ module.exports = {
                 } else {
                     socket.leave("private-" + otherid + "-" + socket.decoded.id);
                 }
+            })
+
+            /** Listener for HashtagLiveFeed join */
+            socket.on('join hashtag', async function(hashtag){
+                await posts.getByHashtag(hashtag, socket);
+                socket.join("hashtag-" + hashtag);
+            })
+
+            /** Listener for HashtagLiveFeed leave */
+            socket.on('leave hashtag', async function(hashtag){
+                socket.leave("hashtag-" + hashtag);
+            })
+
+            socket.on("get hashtagstats", async function(){
+                await posts.getMostUsedHashtags(socket);
             })
 
             /** Listener for new Like on Post */
