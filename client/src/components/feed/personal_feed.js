@@ -64,7 +64,6 @@ class PersonalFeedPosts extends Component {
   }
 
   componentWillUnmount(){
-    var userid = this.props.id;
     this.socket.emit("leave", "personal");
     this.socket.emit("leave", "friends");
   }

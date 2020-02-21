@@ -3,18 +3,19 @@
  * @module routes/userapi
  */
 
-
 /** Use Express and basic Router module */
 const express = require("express");
 const router = express.Router();
 
 /** Database interaction */
-//const auth = require("./auth");
 const users = require("../database/users");
+
+/** Optional packages for image upload and jsonWebTokens */
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
 var JWT_KEY = process.env.TOKEN;
 
+/** Storage location for Post-Images */
 const postStorage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb (null, "./public/postPics");
@@ -24,6 +25,7 @@ const postStorage = multer.diskStorage({
     }
 })
 
+/** Storage location for Profile-Images */
 const profileStorage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb (null, "./public/profilePics");
@@ -34,14 +36,15 @@ const profileStorage = multer.diskStorage({
 })
 
 const postPicPath = multer({storage: postStorage});
-
 const profilePicPath = multer({storage: profileStorage});
 
 
+/** Route for posting Post-Image */
 router.post('/postPicForm', postPicPath.single('postPic'), function (req, res, next) {
     res.send(req.file);
 })
 
+/** Route for posting Profile-Image */
 router.post('/profilePicForm', function(req,res){
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];

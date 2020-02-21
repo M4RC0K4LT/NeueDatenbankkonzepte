@@ -1,60 +1,37 @@
 import React, { Component } from "react";
-import { Card, CardContent, CardActions, IconButton, Typography, Box } from '@material-ui/core';
+import { Card, CardContent, CardActions, IconButton, Typography, Box, withStyles } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import { Favorite as FavoriteIcon } from '@material-ui/icons';
-import { SocketContext } from "../exports";
+import { SocketContext, useStyles } from "../exports";
+import Linkify from 'linkifyjs/react';
+import * as linkify from 'linkifyjs';
+import hashtag from 'linkifyjs/plugins/hashtag';
+
+var linkifyOptions = {
+        className: "linkified",
+        formatHref: function (href, type) {
+            if (type === 'hashtag') {
+            href = 'http://localhost/hashtags/' + href.substring(1);
+            }
+            return href;
+        }
+    }
+
+hashtag(linkify);
 
 class Post extends Component {
     constructor(props) {
         super(props);
         this.handleLike = this.handleLike.bind(this);
         this.socket = SocketContext;
-        //this.state = {multerImage: DefaultImg}
     }
 
     handleLike(){
         this.props.handleLike();
     }
 
-    /*setDefaultImage(uploadType) {
-        if (uploadType === "multer") {
-            this.setState({
-                multerImage: DefaultImg
-            });
-        }
-    }
-
-    uploadImage(e, method) {
-        let imageObj = {};
-
-        if (method === "multer") {
-            let imageFormObj = new FormData();
-
-            imageFormObj.append("imageName", "multer-image" + Date.now());
-            imageFormObj.append("imageData", e.target.files[0]);
-
-            this.setState({
-                multerImage: URL.createObjectURL(e.target.files[0])
-            });
-
-            Router.post(`${API_URL}/image/uploadmulter`, imageFormObj)
-                .then((data) => {
-                    if (data.data.success) {
-                        alert("Image successfully uploaded");
-                        this.setDefaultImage("multer");
-                    }
-                })
-                .catch((err) => {
-                    alert("Error");
-                    this.setDefaultImage("multer");
-                });
-        }
-    }*/
-
-
     render() {
-        const { username, userid, postid, content, timestamp, likes, liked } = this.props
+        const { username, userid, content, timestamp, likes, liked } = this.props
 
         var postdate = new Intl.DateTimeFormat('en-GB', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit'}).format(timestamp);
         let test = content.split("\n");
@@ -69,16 +46,20 @@ class Post extends Component {
                         }
                         if (i < test.length - 1) {
                             return (
-                                <Typography key={i} variant="body">
-                                    {data}
-                                    <br />
-                                </Typography>
+                                <Linkify options={linkifyOptions} style={{ textDecoration: "none" }}>
+                                    <Typography key={i} variant="body">
+                                        {data}
+                                        <br />
+                                    </Typography>
+                                </Linkify>
                             )
                         } else {
                             return (
-                                <Typography key={i} variant="body">
-                                    {data}
-                                </Typography>
+                                <Linkify options={linkifyOptions} style={{ textDecoration: "none" }}>
+                                    <Typography key={i} variant="body">
+                                        {data}
+                                    </Typography>
+                                </Linkify>
                             )
                         }
                     })}
@@ -105,4 +86,4 @@ class Post extends Component {
     }
 }
 
-export default Post;
+export default withStyles(useStyles) (Post);
