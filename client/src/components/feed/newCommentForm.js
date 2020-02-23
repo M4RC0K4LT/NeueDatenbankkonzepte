@@ -1,6 +1,8 @@
 import React, { Component } from "react";
-import { SocketContext } from '../exports';
-import { TextField, Button } from '@material-ui/core';
+import { SocketContext, useStyles } from '../exports';
+import { TextField, Button, withStyles, InputAdornment} from '@material-ui/core';
+import { Image as ImageIcon } from '@material-ui/icons';
+import PostPicture from './postPicture'
 
 var jwtDecode = require('jwt-decode');
 
@@ -11,6 +13,10 @@ class NewCommentForm extends Component {
         this.state = {
             newpost: "",
             error: false,
+            uploadFoto: false,
+            filename: "",
+            picture_included: false,
+            deleted: false,
         };
         this.socket = SocketContext;
         this.handleChange = this.handleChange.bind(this);
@@ -28,20 +34,19 @@ class NewCommentForm extends Component {
             return;
         }
 
-        var token = sessionStorage.getItem("authToken");
-        var decoded = jwtDecode(token);
-
-        var userid = decoded.id.toString();
-        var username = decoded.name;
-        var postDate = Date.now();
-
-        this.socket.emit('new globalpost', JSON.stringify({ content: this.state.newpost, timestamp: postDate, username: username, userid: userid }));
+        this.socket.emit('new globalpost', JSON.stringify({ content: this.state.newpost, picture: this.state.filename }));
         this.setState({ error: false, newpost: "" });
     }
 
     render() {
         return (
             <form>
+                <PostPicture
+                    open={this.state.uploadFoto}
+                    onClose={() => this.setState({ uploadFoto: false })}
+                    uploaded={(filename) => this.setState({ filename: filename, picture_included: true })}
+                    deleted={this.state.deleted}
+                    ></PostPicture>
                 <TextField
                     id="outlined-multiline-static"
                     multiline
@@ -53,14 +58,20 @@ class NewCommentForm extends Component {
                     fullWidth
                     onChange={this.handleChange}
                     margin="normal"
-                    autoFocus>
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment style={{ cursor: "pointer" }} position="end" onClick={() => this.state.picture_included ? this.setState({ filename: "", deleted: true, picture_included: false }) : this.setState({ uploadFoto: true })}>
+                                <ImageIcon color={this.state.picture_included ? "secondary" : "inherit"}/>
+                            </InputAdornment>
+                        ),
+                    }}>
                 </TextField>
 
-                <Button variant="contained" color="primary" onClick={this.handleSubmit}>Submit</Button>
+                <Button variant="contained" className={this.props.classes.submitTweet} color="primary" onClick={this.handleSubmit}>Submit</Button>
             </form>
 
         );
     }
 }
 
-export default NewCommentForm;
+export default withStyles(useStyles) (NewCommentForm);

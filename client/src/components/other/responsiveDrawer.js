@@ -1,7 +1,10 @@
-import React from 'react';
-import { Typography, AppBar, CssBaseline, Link, Drawer, Hidden, IconButton, Toolbar, useTheme, withStyles, List, ListItem, ListItemText, Button } from '@material-ui/core';
+import React, { useState } from 'react';
+import { Typography, AppBar, CssBaseline, Drawer, Hidden, IconButton, Toolbar, useTheme, withStyles, List, ListItem, ListItemText, Button, createMuiTheme, MuiThemeProvider, Switch } from '@material-ui/core';
 import { MenuOutlined as MenuOutlinedIcon } from '@material-ui/icons';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import useStyles from './useStyles';
+import { Link } from "react-router-dom";
+import Asynchronous from './searchBar'
 
 //Handle order delete
 function handleLogout() {
@@ -13,12 +16,21 @@ function handleLogout() {
 function ResponsiveDrawer(props) {
 
     const { container, classes, content, loc } = props;
-    const theme = useTheme();
+    const themex = useTheme();
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
+
+    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+    const [dark, setdark] = useState({ prefersDarkMode });
+    const theme = 
+        createMuiTheme({
+            palette: {
+                type: dark ? 'dark' : 'light',
+            }});
+
 
     /** Logout Button */
     let logout = null;
@@ -31,6 +43,7 @@ function ResponsiveDrawer(props) {
     }
 
     return (
+        <MuiThemeProvider theme={theme}>
         <div className={classes.root}>
             <CssBaseline />
 
@@ -47,14 +60,20 @@ function ResponsiveDrawer(props) {
                             <MenuOutlinedIcon />
                         </IconButton>
                     </Hidden>
-                    <Typography variant="h5" className={classes.title}><Link style={{ textDecoration: "none", color: "inherit" }} href="/">Tweety</Link></Typography>
+                    <Typography variant="h5" className={classes.title}><Link style={{ textDecoration: "none", color: "inherit" }} to="/">Tweety</Link></Typography>
                     <Hidden smDown implementation="css">
                         <Toolbar>
-                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} href="/feed">Feed</Link></Typography>
-                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} href="/personal">Personal</Link></Typography> 
-                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} href="/hashtags">Tags</Link></Typography> 
-                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} href="/profile">Profile</Link></Typography>    
-                            {logout}                        
+                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/feed">Feed</Link></Typography>
+                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/personal">Personal</Link></Typography> 
+                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/hashtags">Tags</Link></Typography> 
+                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/profile">Profile</Link></Typography>    
+                            {logout}  
+                            <Asynchronous dark={dark}></Asynchronous>    
+                            <Switch
+                                checked={dark}
+                                onChange={() => dark ? setdark(false) : setdark(true)}
+                            />   
+                                           
                         </Toolbar>
                         
                     </Hidden>
@@ -66,7 +85,7 @@ function ResponsiveDrawer(props) {
                 <Drawer
                     container={container}
                     variant="temporary"
-                    anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+                    anchor={themex.direction === 'rtl' ? 'right' : 'left'}
                     open={mobileOpen}
                     onClick={handleDrawerToggle}
                     onClose={handleDrawerToggle}
@@ -78,25 +97,25 @@ function ResponsiveDrawer(props) {
                     }}
                 >
                     <List>
-                        <ListItem button key={1} component={Link} style={{ color: "inherit" }} href={"/feed"} >
+                        <ListItem button key={1} component={Link} style={{ color: "inherit" }} to={"/feed"} >
                             {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Feed"} />
                         </ListItem>
                     </List>
                     <List>
-                        <ListItem button key={2} component={Link} style={{ color: "inherit" }} href={"/personal"} >
+                        <ListItem button key={2} component={Link} style={{ color: "inherit" }} to={"/personal"} >
                             {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Personal"} />
                         </ListItem>
                     </List>
                     <List>
-                        <ListItem button key={3} component={Link} style={{ color: "inherit" }} href={"/hashtags"} >
+                        <ListItem button key={3} component={Link} style={{ color: "inherit" }} to={"/hashtags"} >
                             {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Tags"} />
                         </ListItem>
                     </List>
                     <List>
-                        <ListItem button key={4} component={Link} style={{ color: "inherit" }} href={"/profile"} >
+                        <ListItem button key={4} component={Link} style={{ color: "inherit" }} to={"/profile"} >
                             {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Profil"} />
                         </ListItem>
@@ -110,13 +129,16 @@ function ResponsiveDrawer(props) {
 
             </nav>
 
-            {/** Website content next href drawer (passed as props) */}
-            <main className={classes.content}>
-                <div className={classes.toolbar} />
-                {content}
-            </main>
+            {/** Website content next to drawer (passed as props) */}
+            
+                <main className={classes.content}>
+                    <div className={classes.toolbar} />
+                    {content}
+                </main>
+            
 
         </div>
+        </MuiThemeProvider>
     );
 }
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom'
 import ReactDOM from 'react-dom'
 import GlobalFeed from "./main/GlobalFeed"
-import { ResponsiveDrawer, PrivateRoute, ShowFollowedUsers } from './components/exports'
+import { ResponsiveDrawer, PrivateRoute, ShowFollowedUsers, ShowRecentHashtags } from './components/exports'
 import { Grid, Hidden, Box } from '@material-ui/core';
 import Login from './main/login';
 import Register from './main/register';
@@ -20,8 +20,11 @@ const exclusionArray = [
 
 const Friends = () => (
     <Hidden mdDown>
-        <Grid item xs={2} style={{ marginLeft: "100px" }}>       
+        <Grid item xs={2} style={{ marginLeft: "100px" }}>      
+            <Box style={{ position: "sticky", top: "100px", left: "0", width: "100%"}}>
                 <ShowFollowedUsers></ShowFollowedUsers>
+                <ShowRecentHashtags></ShowRecentHashtags>
+            </Box> 
         </Grid>  
     </Hidden>
 )

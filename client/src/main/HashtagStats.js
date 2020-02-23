@@ -1,20 +1,7 @@
 import React, { Component } from "react";
 import { Typography, TableContainer, Table, TableBody, TableRow, TableCell } from '@material-ui/core';
 import { SocketContext } from "../components/exports";
-import Linkify from 'linkifyjs/react';
-import * as linkify from 'linkifyjs';
-import hashtag from 'linkifyjs/plugins/hashtag'
-
-var linkifyOptions = {
-    className: "linkified",
-    formatHref: function (href, type) {
-        if (type === 'hashtag') {
-        href = 'http://localhost/hashtags/' + href.substring(1);
-        }
-        return href;
-    }
-}
-hashtag(linkify);
+import { Link } from "react-router-dom";
 
 class HashtagStats extends Component {
     constructor() {
@@ -57,7 +44,7 @@ class HashtagStats extends Component {
                                     return (
                                         <TableRow>
                                             <TableCell>{value+1}</TableCell>
-                                            <TableCell><Linkify options={linkifyOptions} style={{ textDecoration: "none" }}>#{data[0].toString()}</Linkify></TableCell>
+                                            <TableCell><Link style={{ textDecoration: "none", color: "#64b5f6" }} to={"/hashtags/" + data[0]}>#{data[0].toString()}</Link></TableCell>
                                             <TableCell>{data[1]}</TableCell>
                                         </TableRow>
                                     )

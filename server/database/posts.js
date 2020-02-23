@@ -8,6 +8,7 @@ module.exports = {
 
     async getAll(socket){
         let postJsonStrings = await db.zrangeAsync(individualPath + 'post', 0, -1, "WITHSCORES");
+        let previousPosts = [];
         for(postID of postJsonStrings){
             let postdata = await db.hgetallAsync(individualPath + "post:" + postID)
             if(postdata != null){                
@@ -17,14 +18,15 @@ module.exports = {
                     liked = true;
                 }
                 let daten = Object.assign({"postid": postID, "liked": liked}, postdata);
-                socket.emit('post', JSON.stringify(daten));
-                
+                previousPosts.unshift(daten);                
             }
-        }          
+        }    
+        socket.emit('previous posts', previousPosts);      
     },
 
     async getByUser(id, socket){
         let postJsons = await db.zrangeAsync(individualPath + 'postByUserID:' + id, 0, -1)
+        let previousPosts = [];
         for(postID of postJsons){        
             let postdata = await db.hgetallAsync(individualPath + "post:" + postID)
             if(postdata != null){                
@@ -34,14 +36,16 @@ module.exports = {
                     liked = true;
                 }
                 let daten = Object.assign({"postid": postID, "liked": liked}, postdata);
-                socket.emit('post', JSON.stringify(daten));                
+                previousPosts.unshift(daten);               
             }    
         }
+        socket.emit('previous posts', previousPosts); 
     },
 
     async getByHashtag(hashtag, socket){
         let postIDs = await db.zrangeAsync(individualPath + "hashtag:" + hashtag, 0, -1);
         let used = await db.zscore(individualPath + "hashtags", hashtag);
+        let previousPosts = []
         socket.emit("hastag used", used);
         for(postID of postIDs){        
             let postdata = await db.hgetallAsync(individualPath + "post:" + postID)
@@ -52,9 +56,20 @@ module.exports = {
                     liked = true;
                 }
                 let daten = Object.assign({"postid": postID, "liked": liked}, postdata);
-                socket.emit('post', JSON.stringify(daten));                
+                previousPosts.unshift(daten)              
             }    
         }
+        socket.emit('previous posts', previousPosts);  
+    },
+
+    async getAllHashtags(){
+        let hashtags = await db.zrangeAsync(individualPath + "hashtags", 0, -1)
+        let allhashtags = [];
+        for(hashtag of hashtags){
+            let daten = {"value": "#" + hashtag, "entity": "hashtag"};
+            allhashtags.push(daten)
+        }
+        return allhashtags;
     },
 
     async getMostUsedHashtags(socket){
@@ -63,18 +78,22 @@ module.exports = {
     },
 
     async create(jsonObject, socket, io){
+        let now = Date.now();
+        let pic = jsonObject.picture;        
+        if(pic == undefined){
+            pic = "";
+        }
         let uniquePostID = await db.incrAsync(individualPath + 'uniquePostID');
-        let setPost = await db.hmsetAsync(individualPath + 'post:' + uniquePostID, 'username', jsonObject.username, 'timestamp', jsonObject.timestamp, 'content', jsonObject.content, 'userid', jsonObject.userid, 'likes', 0)
-        let toAllPosts = await db.zaddAsync(individualPath + 'post', jsonObject.timestamp, uniquePostID)
-        let toUsersPosts = await db.zaddAsync(individualPath + 'postByUserID:' + jsonObject.userid, jsonObject.timestamp, uniquePostID)
-        let newpost = Object.assign({"postid": uniquePostID, "liked": false, "likes": "0"}, jsonObject);
+        let setPost = await db.hmsetAsync(individualPath + 'post:' + uniquePostID, 'username', socket.decoded.name, 'timestamp', now, 'content', jsonObject.content, 'userid', socket.decoded.id, 'likes', 0, 'picture', pic)
+        let toAllPosts = await db.zaddAsync(individualPath + 'post', now, uniquePostID)
+        let toUsersPosts = await db.zaddAsync(individualPath + 'postByUserID:' + socket.decoded.id, now, uniquePostID)
+        let newpost = Object.assign({"postid": uniquePostID, "liked": false, "likes": "0", 'username': socket.decoded.name, 'timestamp': now, 'userid': socket.decoded.id, 'picture': pic}, jsonObject);
         let linkifyFound = linkify.find(jsonObject.content)
         for(found of linkifyFound){
             if(found.type == "hashtag"){
                 let value = found.value.slice(1);
-                console.log(value)
                 let toAllHashtags = await db.zincrbyAsync(individualPath + 'hashtags', 1, value);
-                let toHashtagList = await db.zaddAsync(individualPath + "hashtag:" + value, jsonObject.timestamp, uniquePostID);
+                let toHashtagList = await db.zaddAsync(individualPath + "hashtag:" + value, now, uniquePostID);
                 io.sockets.in("hashtag-" + value).emit("post", JSON.stringify(newpost));
             }
         }
@@ -119,15 +138,16 @@ module.exports = {
             higher_userid = requestingid;
         }
         let posts_withtimestamp = await db.zrangeAsync(individualPath + "privateChat:" + smaller_userid + "-" + higher_userid, 0, -1, "WITHSCORES");
+        let prevMessages = [];
         for (i = 0; i < posts_withtimestamp.length; i++) {
             let content = JSON.parse(posts_withtimestamp[i]);
             let sender = content.id;
             let message = content.message;
             let timestamp = posts_withtimestamp[i+1];
-            socket.emit("post", JSON.stringify({"sender": sender, "message": message, "timestamp": timestamp}))
+            prevMessages.push({"sender": sender, "message": message, "timestamp": timestamp})
             i++;
-
         }
+        socket.emit("previous posts", prevMessages)
 
     },
 
@@ -141,6 +161,7 @@ module.exports = {
             }
         }
         var sorted_postIDs = oldposts.sort();
+        let previousPosts = [];
         for(postid of sorted_postIDs){
             var post = await db.hgetallAsync(individualPath + "post:" + postid)
             let hasLiked = await db.sismemberAsync(individualPath + "PostLikes:" + postid, socket.decoded.id)
@@ -149,10 +170,9 @@ module.exports = {
                 liked = true;
             }
             let daten = Object.assign({"postid": postid, "liked": liked}, post);
-            socket.emit('post', JSON.stringify(daten)); 
+            previousPosts.unshift(daten)
         }
-
-        return oldposts
+        socket.emit('previous posts', previousPosts); 
         
     },
 

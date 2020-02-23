@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link, Redirect } from 'react-router-dom';
 import { Avatar, Button, withStyles, Input, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Badge } from '@material-ui/core';
 import { useStyles, SnackbarMessage } from '../exports'
 import { postProfilePicture } from '../../api/exports'

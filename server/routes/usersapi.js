@@ -6,9 +6,11 @@
 /** Use Express and basic Router module */
 const express = require("express");
 const router = express.Router();
+const uuidv4 = require('uuid/v4');
 
 /** Database interaction */
 const users = require("../database/users");
+const posts = require("../database/posts");
 
 /** Optional packages for image upload and jsonWebTokens */
 const multer = require('multer');
@@ -21,7 +23,8 @@ const postStorage = multer.diskStorage({
         cb (null, "./public/postPics");
     },
     filename: function (req, file, cb) {
-        cb(null, file.originalname);
+        req.new_filename = req.unique_pic_id + "." + file.originalname.split(".").slice(-1)[0].toLowerCase();
+        cb(null, req.new_filename);
     }
 })
 
@@ -40,8 +43,15 @@ const profilePicPath = multer({storage: profileStorage});
 
 
 /** Route for posting Post-Image */
-router.post('/postPicForm', postPicPath.single('postPic'), function (req, res, next) {
-    res.send(req.file);
+router.post('/postPicForm', function(req,res){
+    req.unique_pic_id = uuidv4();
+    var upload = postPicPath.single('postPic');
+    upload(req,res,function(err) {
+        if(err) {
+            return res.send({"request": "failed", "error": err});
+        }
+        res.send({"request": "successful", "uuid": req.new_filename});
+    });
 })
 
 /** Route for posting Profile-Image */
@@ -89,6 +99,13 @@ router.post('/register', async function(request, response) {
         let data = Object.assign({"request": "failed"}, err)
         response.status(500).send(data);
     }
+});
+
+/** POST: Register new User */
+router.get('/search', async function(request, response) {
+        const user = await users.getAll();  
+        const post = await posts.getAllHashtags();  
+        return response.status(200).send(JSON.stringify(user.concat(post)));
 });
 
 module.exports = router;

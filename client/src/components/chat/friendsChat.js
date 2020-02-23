@@ -7,29 +7,31 @@ class FriendsChat extends Component {
     super();
     this.state = {
       response: [],
-      newpost: "",
       error: null,
+      loading: false,
     };
     this.socket = SocketContext;
     this.scrollToBottom = this.scrollToBottom.bind(this);
     this.messagesEndRef = React.createRef()
   }
 
-  componentDidMount() {
-    let { response } = this.state;
+  componentDidMount() { 
 
-    
-
+    this.props.startLoading();
+    this.setState({ loading: true })
     this.socket.emit("join private", this.props.friendsid)
 
-
-    this.socket.on('post', (rawPost => {
-      var previous = response;
+    this.socket.on('post', ((rawPost) => {
+      var previous = this.state.response;
       var newpost = JSON.parse(rawPost);
       previous.push(newpost)
-      this.setState({ response: previous });
-      
-      
+      this.setState({ response: previous });  
+    }));
+
+    this.socket.on('previous posts', ((rawPost) => {
+      this.props.endLoading()
+      this.setState({ loading: false })
+      this.setState({ response: rawPost });
     }));
 
     this.socket.on('error', (err) => {
@@ -41,19 +43,27 @@ class FriendsChat extends Component {
     this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
   }
 
-  componentDidUpdate(){
-    this.scrollToBottom()
+  componentDidUpdate(prevProps){
+    if (this.props.friendsid !== prevProps.friendsid) {
+      this.socket.removeAllListeners();
+      this.socket.emit("leave private", prevProps.friendsid)
+      this.setState({ response: [] })
+      this.componentDidMount()   
+    } else {
+      this.scrollToBottom()
+    }
   }
 
   componentWillUnmount() {
+    this.socket.removeAllListeners();
     this.socket.emit("leave private", this.props.friendsid)
   }
 
   render() {
-    const { response, error } = this.state;
+    const { response, error, loading } = this.state;
     let showposts = null;
 
-    if (response.length === 0 || response == null || typeof response != "object") {
+    if((response.length === 0 || response == null || typeof response != "object") && (loading == false)){
       showposts = (
         <div>
           <Typography variant="h" align="center">You haven't chated with that user yet</Typography>

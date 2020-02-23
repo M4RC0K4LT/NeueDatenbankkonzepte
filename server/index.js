@@ -2,17 +2,17 @@ const express = require("express");
 const app = express();
 
 /** Individual database path as prefix of all entries */
-individualPath = "gruppe-kann-nix-52-";
-
-/** Optional Packages */
-const http = require("http").createServer(app);
-const bodyParser = require('body-parser');
-require("dotenv").config()
+individualPath = "gruppe-kann-nix-57-";
 
 /** Cors options */
 const cors = require('cors')
 app.use(cors());
 app.options('*', cors())
+
+/** Optional Packages */
+const http = require("http").createServer(app);
+const bodyParser = require('body-parser');
+require("dotenv").config()
 
 /** Initialize Sockets for communication */
 const basic_sockets = require('./routes/sockets');
