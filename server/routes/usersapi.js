@@ -10,6 +10,7 @@ const uuidv4 = require('uuid/v4');
 
 /** Database interaction */
 const users = require("../database/users");
+const posts = require("../database/posts");
 
 /** Optional packages for image upload and jsonWebTokens */
 const multer = require('multer');
@@ -98,6 +99,13 @@ router.post('/register', async function(request, response) {
         let data = Object.assign({"request": "failed"}, err)
         response.status(500).send(data);
     }
+});
+
+/** POST: Register new User */
+router.get('/search', async function(request, response) {
+        const user = await users.getAll();  
+        const post = await posts.getAllHashtags();  
+        return response.status(200).send(JSON.stringify(user.concat(post)));
 });
 
 module.exports = router;

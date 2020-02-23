@@ -60,7 +60,7 @@ class NewCommentForm extends Component {
                     margin="normal"
                     InputProps={{
                         endAdornment: (
-                            <InputAdornment position="end" onClick={() => this.state.picture_included ? this.setState({ filename: "", deleted: true, picture_included: false }) : this.setState({ uploadFoto: true })}>
+                            <InputAdornment style={{ cursor: "pointer" }} position="end" onClick={() => this.state.picture_included ? this.setState({ filename: "", deleted: true, picture_included: false }) : this.setState({ uploadFoto: true })}>
                                 <ImageIcon color={this.state.picture_included ? "secondary" : "inherit"}/>
                             </InputAdornment>
                         ),

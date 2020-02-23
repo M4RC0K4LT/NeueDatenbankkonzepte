@@ -29,7 +29,6 @@ class Profile extends Component {
         this.socket.emit("getUserData", id);
         this.socket.on("getUserDataReturn", (rawData) => {
             var newdata = JSON.parse(rawData);
-            console.log(newdata)
             this.setState({ userdata: newdata });
         })
         this.socket.on("addfollower", (id) => {

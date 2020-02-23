@@ -62,6 +62,16 @@ module.exports = {
         socket.emit('previous posts', previousPosts);  
     },
 
+    async getAllHashtags(){
+        let hashtags = await db.zrangeAsync(individualPath + "hashtags", 0, -1)
+        let allhashtags = [];
+        for(hashtag of hashtags){
+            let daten = {"value": "#" + hashtag, "entity": "hashtag"};
+            allhashtags.push(daten)
+        }
+        return allhashtags;
+    },
+
     async getMostUsedHashtags(socket){
         let mostHashtags = await db.zrangeAsync(individualPath + "hashtags", 0, 10, "WITHSCORES");
         socket.emit("hashtagstats", mostHashtags);

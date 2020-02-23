@@ -8,6 +8,7 @@ window.$apiroute = "http://localhost:3000";
 class Index extends React.Component{    
 
     render(){
+        
         return (
                 <Router>
                     <App></App>          

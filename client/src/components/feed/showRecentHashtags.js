@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { List, ListItem, ListItemText, ListItemSecondaryAction, withStyles, Container, Typography } from '@material-ui/core';
 import { useStyles, SocketContext } from '../exports'
-import {  Redirect, useHistory } from 'react-router-dom';
-import { Link } from "react-router-dom";
+import {  Redirect, useHistory, Link } from 'react-router-dom';
 
 class ShowRecentHashtags extends Component {
 
@@ -49,7 +48,7 @@ class ShowRecentHashtags extends Component {
                 <List>
                     {this.state.recentTags.map((value, i) => {
                         return (
-                        <ListItem alignItems="flex-start" key={i} button component={Link} style={{ color: "inherit" }} to={"/hashtags/" + value[0]}>
+                        <ListItem alignItems="flex-start" key={i} button component={Link} style={{ textDecoration: "none", color: "#64b5f6" }} to={"/hashtags/" + value[0]}>
                             <ListItemText id={value.id} primary={"#" + value[0]} />
                             <ListItemSecondaryAction>
                                 {value[1]}

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Typography, AppBar, CssBaseline, Drawer, Hidden, IconButton, Toolbar, useTheme, withStyles, List, ListItem, ListItemText, Button, createMuiTheme, MuiThemeProvider, Switch } from '@material-ui/core';
 import { MenuOutlined as MenuOutlinedIcon } from '@material-ui/icons';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import useStyles from './useStyles';
 import { Link } from "react-router-dom";
+import Asynchronous from './searchBar'
 
 //Handle order delete
 function handleLogout() {
@@ -21,24 +23,13 @@ function ResponsiveDrawer(props) {
         setMobileOpen(!mobileOpen);
     };
 
-    const [theme, setTheme] = useState({
-        palette: {
-          type: "light"
-        }
-    });
-
-    // we change the palette type of the theme in state
-    const toggleDarkTheme = () => {
-    let newPaletteType = theme.palette.type === "light" ? "dark" : "light";
-    setTheme({
-        palette: {
-        type: newPaletteType
-        }
-    });
-    };
-
-    // we generate a MUI-theme from state's theme object
-    const muiTheme = createMuiTheme(theme);
+    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+    const [dark, setdark] = useState({ prefersDarkMode });
+    const theme = 
+        createMuiTheme({
+            palette: {
+                type: dark ? 'dark' : 'light',
+            }});
 
 
     /** Logout Button */
@@ -52,7 +43,7 @@ function ResponsiveDrawer(props) {
     }
 
     return (
-        <MuiThemeProvider theme={muiTheme}>
+        <MuiThemeProvider theme={theme}>
         <div className={classes.root}>
             <CssBaseline />
 
@@ -76,10 +67,13 @@ function ResponsiveDrawer(props) {
                             <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/personal">Personal</Link></Typography> 
                             <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/hashtags">Tags</Link></Typography> 
                             <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/profile">Profile</Link></Typography>    
-                            {logout}     
+                            {logout}  
+                            <Asynchronous dark={dark}></Asynchronous>    
                             <Switch
-                                onChange={toggleDarkTheme}
-                            />                   
+                                checked={dark}
+                                onChange={() => dark ? setdark(false) : setdark(true)}
+                            />   
+                                           
                         </Toolbar>
                         
                     </Hidden>

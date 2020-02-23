@@ -44,7 +44,7 @@ class HashtagStats extends Component {
                                     return (
                                         <TableRow>
                                             <TableCell>{value+1}</TableCell>
-                                            <TableCell><Link className="linkified" to={"/hashtags/" + data[0]}>#{data[0].toString()}</Link></TableCell>
+                                            <TableCell><Link style={{ textDecoration: "none", color: "#64b5f6" }} to={"/hashtags/" + data[0]}>#{data[0].toString()}</Link></TableCell>
                                             <TableCell>{data[1]}</TableCell>
                                         </TableRow>
                                     )

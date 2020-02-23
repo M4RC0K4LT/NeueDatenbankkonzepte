@@ -13,8 +13,24 @@ const jwt = require('jsonwebtoken')
 var JWT_KEY = process.env.TOKEN;
 
 module.exports = {
- 
+  
   /**
+   * Return user by ID.
+   * @param {string} id - Searched UserID.
+   * @return {JSON} Userdata.
+   */
+ 
+  async getAll(){
+    let users = await db.hgetallAsync(individualPath + "user");
+    let allusers = [];
+    for(user in users){
+      let daten = {"value": user, "id": users[user], "entity": "user" };
+      allusers.push(daten)
+    }
+    return allusers;
+  },
+
+ /**
    * Return user by ID.
    * @param {string} id - Searched UserID.
    * @return {JSON} Userdata.
