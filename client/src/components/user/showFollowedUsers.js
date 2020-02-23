@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { List, ListItem, ListItemAvatar, Link, Avatar, ListItemText, ListItemSecondaryAction, withStyles, Badge, Container, IconButton, Typography, Divider} from '@material-ui/core';
+import { List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemSecondaryAction, withStyles, Badge, Container, IconButton, Typography } from '@material-ui/core';
 import { useStyles, SocketContext } from '../exports'
 import { Chat as ChatIcon } from '@material-ui/icons';
-import { getFriends } from "../../api/exports";
-import {  Redirect, useHistory } from 'react-router-dom';
+import {  Redirect, useHistory, Link } from 'react-router-dom';
 import socket from '../other/SocketContext';
 
 const StyledBadge = withStyles(theme => ({
@@ -126,6 +125,10 @@ class ShowFollowedUsers extends Component {
           });
     }
 
+    componentWillUnmount(){
+        this.socket.removeAllListeners();
+    }
+
     render() {
         let { classes } = this.props 
 
@@ -138,7 +141,7 @@ class ShowFollowedUsers extends Component {
                 <List>
                     {this.state.allfriends.map((value, i) => {
                         return (
-                        <ListItem key={i} button component={Link} style={{ color: "inherit" }} href={"/profile/" + value.id}>
+                        <ListItem key={i} button component={Link} style={{ color: "inherit" }} to={"/profile/" + value.id}>
                             <ListItemAvatar>
                                 <StyledBadge
                                     overlap="circle"
@@ -154,7 +157,7 @@ class ShowFollowedUsers extends Component {
                             </ListItemAvatar>
                             <ListItemText id={value.id} primary={value.username} />
                             <ListItemSecondaryAction>
-                                <IconButton component={Link} href={"/private/" + value.id}>
+                                <IconButton component={Link} to={"/private/" + value.id}>
                                 <Badge variant="dot" color="primary" invisible={value.newmessage == 1 ? false : true}>
                                     <ChatIcon></ChatIcon>
                                 </Badge>

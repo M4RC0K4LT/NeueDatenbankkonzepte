@@ -18,6 +18,7 @@ import FriendsChat from './chat/friendsChat';
 import SnackbarMessage from './other/snackbarmessage';
 import ProfilePicture from './user/profilePicture';
 import HashtagFeedPosts from './feed/hashtag_feed';
+import ShowRecentHashtags from './feed/showRecentHashtags';
 
 /** Central components-ExportFile */
 export {
@@ -40,5 +41,6 @@ export {
     FriendsChat,
     SnackbarMessage,
     ProfilePicture,
-    HashtagFeedPosts
+    HashtagFeedPosts,
+    ShowRecentHashtags
 }

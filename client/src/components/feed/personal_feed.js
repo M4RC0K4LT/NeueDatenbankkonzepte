@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Post, SocketContext } from "../exports";
-import { Typography } from '@material-ui/core';
+import { Typography, Backdrop, CircularProgress } from '@material-ui/core';
 
 class PersonalFeedPosts extends Component {
   constructor() {
@@ -9,6 +9,7 @@ class PersonalFeedPosts extends Component {
       response: [],
       newpost: "",
       error: null,
+      loading: false
     };
     this.socket = SocketContext;
     this.handleLike = this.handleLike.bind(this);
@@ -26,16 +27,23 @@ class PersonalFeedPosts extends Component {
   }
 
   componentDidMount() {
-    let { response } = this.state;
     
+    this.props.startLoading();
+    this.setState({ loading: true })
     this.socket.emit("join", "personal")
 
 
     this.socket.on('post', (rawPost => {
-      var previous = response;
+      var previous = this.state.response;
       var newpost = JSON.parse(rawPost);
       previous.unshift(newpost)
       this.setState({ response: previous });
+    }));
+
+    this.socket.on('previous posts', (rawPost => {
+      this.setState({ loading: false })
+      this.props.endLoading()
+      this.setState({ response: rawPost });
     }));
 
     this.socket.on('error', (err) => {
@@ -43,6 +51,7 @@ class PersonalFeedPosts extends Component {
     });
 
     this.socket.on("newlike", (postid) => {
+      let { response } = this.state;
       for (var i = 0; i < response.length; i++) {
         if(response[i].postid == postid){
           response[i].likes = parseInt(response[i].likes)+1;
@@ -53,6 +62,7 @@ class PersonalFeedPosts extends Component {
     }) 
     
     this.socket.on("removelike", (postid) => {
+      let { response } = this.state;
       for (var i = 0; i < response.length; i++) {
         if(response[i].postid == postid){
           response[i].likes = parseInt(response[i].likes)-1;
@@ -64,15 +74,16 @@ class PersonalFeedPosts extends Component {
   }
 
   componentWillUnmount(){
+    this.socket.removeAllListeners();
     this.socket.emit("leave", "personal");
     this.socket.emit("leave", "friends");
   }
 
   render() {
-    const { response, error } = this.state;
+    const { response, error, loading } = this.state;
     let showposts = null;
     
-    if(response.length === 0 || response == null || typeof response != "object" ){
+    if((response.length === 0 || response == null || typeof response != "object") && (loading == false)){
       showposts = (
         <div>
           <Typography variant="h4"align="center">Sorry - Your friends are boring :/</Typography>
@@ -95,6 +106,7 @@ class PersonalFeedPosts extends Component {
               username={data.username}
               userid={data.userid}
               timestamp={data.timestamp}
+              picture={data.picture}
               handleLike={() => this.handleLike(data.postid, i)}>
             </Post>         
         ))}

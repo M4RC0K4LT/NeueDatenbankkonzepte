@@ -1,13 +1,14 @@
 import React, { Component } from "react";
-import { PersonalFeedPosts, NewCommentForm, useStyles, NewPrivateMessage, FriendsChat } from '../components/exports';
-import { Box, Typography, Divider, TextField, withStyles } from '@material-ui/core';
+import { useStyles, NewPrivateMessage, FriendsChat } from '../components/exports';
+import { Typography, withStyles, Backdrop, CircularProgress } from '@material-ui/core';
 
 class PrivateChat extends Component {
 
     constructor(props){
         super(props);
         this.state = {
-            width: 0
+            width: 0,
+            open: false
         };  
     }  
 
@@ -15,10 +16,15 @@ class PrivateChat extends Component {
         const { classes } = this.props
         return (
         <div>    
+            <Backdrop open={this.state.open} className={classes.backdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <Typography variant="h5" align="center">Chat with your friend</Typography>
             <br></br>
             <br></br>
-            <FriendsChat
+            <FriendsChat  
+                startLoading={() => this.setState({ open: true })} 
+                endLoading={() => this.setState({ open: false})}
                 friendsid={this.props.match.params.id}>
             </FriendsChat>
             <NewPrivateMessage

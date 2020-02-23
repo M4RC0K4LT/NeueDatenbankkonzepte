@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 
 /** Individual database path as prefix of all entries */
-individualPath = "gruppe-kann-nix-52-";
+individualPath = "gruppe-kann-nix-57-";
 
 /** Optional Packages */
 const http = require("http").createServer(app);

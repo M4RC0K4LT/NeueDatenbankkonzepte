@@ -50,7 +50,7 @@ module.exports = {
                 if(room === "global"){
                     posts.getAll(socket);
                 }
-                if(room === "personal"){
+                else if(room === "personal"){
                     user.getToFriendsRoom(socket.decoded.id, socket);
                     posts.getPersonalFeed(socket.decoded.id, socket);
                 }   
@@ -87,7 +87,7 @@ module.exports = {
                 if(socket.decoded.id<otherid){
                     socket.leave("private-" + socket.decoded.id + "-" + otherid);
                 } else {
-                    socket.leave("private-" + otherid + "-" + socket.decoded.id);
+                    socket.leave("private-" + otherid + "-" + socket.decoded.id);                    
                 }
             })
 
@@ -109,13 +109,13 @@ module.exports = {
             /** Listener for new Like on Post */
             socket.on('like', function(postid){
                 posts.likePost(postid, socket.decoded.id);
-                io.emit("newlike", postid.toString())
+                io.emit("newlike", postid)
             })
     
             /** Listener for removed Like on Post */
             socket.on('removelike', function(postid){
                 posts.removePostLike(postid, socket.decoded.id);
-                io.emit("removelike", postid.toString())
+                io.emit("removelike", postid)
             })
     
             /** Listener to return all friends/users followed */

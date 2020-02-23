@@ -56,15 +56,24 @@ const useStyles = theme => ({
       borderColor: "white"
     },
     onlineFriends: {
-      position: "sticky",
-      top: "100px",
       textAlign: "center",
-      backgroundColor: "#DFDFDF",  
+      backgroundColor: theme.palette.action.disabledBackground,  
       borderRadius: "15px",
-      padding: "5px"
-
+      padding: "15px",
+      maxHeight: "400px",
+      overflow: "auto",
     },
 
+    recentTags: {
+      textAlign: "center",
+      backgroundColor: theme.palette.action.disabledBackground,  
+      borderRadius: "15px",
+      padding: "15px",
+      margin: "0",
+      marginTop: "30px",
+      maxWidth: "75%",
+    },
+  
     privateMessage: {
       borderRadius: "16px", 
       color: "white", 
@@ -92,10 +101,11 @@ const useStyles = theme => ({
       height: theme.spacing(20),
       margin: "auto",
       marginBottom: theme.spacing(4),
+      backgroundColor: theme.palette.action.disabledBackground,  
     },
     
     backdrop: {
-      zIndex: theme.zIndex.drawer + 1,
+      zIndex: theme.zIndex.drawer + 3,
       color: '#fff',
     },
 
@@ -107,6 +117,10 @@ const useStyles = theme => ({
         backgroundColor: green[500],
         justifyContent: "center"
     },
+    backdrop: {
+      zIndex: theme.zIndex.drawer + 1,
+      color: '#fff',
+    }
 });
 
 /**
