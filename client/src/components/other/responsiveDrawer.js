@@ -66,13 +66,16 @@ function ResponsiveDrawer(props) {
                             <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/feed">Feed</Link></Typography>
                             <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/personal">Personal</Link></Typography> 
                             <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/hashtags">Tags</Link></Typography> 
-                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/profile">Profile</Link></Typography>    
-                            {logout}  
-                            <Asynchronous dark={dark}></Asynchronous>    
-                            <Switch
-                                checked={dark}
-                                onChange={() => dark ? setdark(false) : setdark(true)}
-                            />   
+                            <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit", marginRight: "30px" }} to="/profile">Profile</Link></Typography>    
+                            <Asynchronous dark={dark}></Asynchronous>
+                            <Typography variant="subtitle1" className={classes.subtitle} style={{ marginLeft: "50px" }}>
+                                Darkmode 
+                                    <Switch
+                                    checked={dark}
+                                    onChange={() => dark ? setdark(false) : setdark(true)}
+                                />   
+                            </Typography>
+                            <Typography>{logout}</Typography>
                                            
                         </Toolbar>
                         
