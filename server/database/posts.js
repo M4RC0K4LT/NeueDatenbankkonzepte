@@ -4,6 +4,15 @@ var linkify = require('linkifyjs');
 require('linkifyjs/plugins/hashtag')(linkify);
 var linkifyHtml = require('linkifyjs/html');
 
+var latinize = require('latinize');
+latinize.characters['Ä'] = 'Ae';
+latinize.characters['Ö'] = 'Oe';
+latinize.characters['Ü'] = 'Ue';
+latinize.characters['ä'] = 'ae';
+latinize.characters['ü'] = 'ue';
+latinize.characters['ö'] = 'oe';
+
+
 module.exports = {
 
     async getAll(socket){
@@ -79,16 +88,17 @@ module.exports = {
 
     async create(jsonObject, socket, io){
         let now = Date.now();
-        let pic = jsonObject.picture;        
+        let pic = jsonObject.picture;    
+        let content = latinize(jsonObject.content);  
         if(pic == undefined){
             pic = "";
         }
         let uniquePostID = await db.incrAsync(individualPath + 'uniquePostID');
-        let setPost = await db.hmsetAsync(individualPath + 'post:' + uniquePostID, 'username', socket.decoded.name, 'timestamp', now, 'content', jsonObject.content, 'userid', socket.decoded.id, 'likes', 0, 'picture', pic)
+        let setPost = await db.hmsetAsync(individualPath + 'post:' + uniquePostID, 'username', socket.decoded.name, 'timestamp', now, 'content', content, 'userid', socket.decoded.id, 'likes', 0, 'picture', pic)
         let toAllPosts = await db.zaddAsync(individualPath + 'post', now, uniquePostID)
         let toUsersPosts = await db.zaddAsync(individualPath + 'postByUserID:' + socket.decoded.id, now, uniquePostID)
-        let newpost = Object.assign({"postid": uniquePostID, "liked": false, "likes": "0", 'username': socket.decoded.name, 'timestamp': now, 'userid': socket.decoded.id, 'picture': pic}, jsonObject);
-        let linkifyFound = linkify.find(jsonObject.content)
+        let newpost = {"postid": uniquePostID, "liked": false, "likes": "0", 'username': socket.decoded.name, 'timestamp': now, 'userid': socket.decoded.id, 'picture': pic, "content": content};
+        let linkifyFound = linkify.find(content)
         for(found of linkifyFound){
             if(found.type == "hashtag"){
                 let value = found.value.slice(1);
