@@ -3,6 +3,8 @@ import { Avatar, Button, withStyles, Input, Dialog, DialogActions, DialogTitle, 
 import { useStyles, SnackbarMessage } from '../exports'
 import { postProfilePicture } from '../../api/exports'
 import SettingsIcon from '@material-ui/icons/Settings';
+import DeleteIcon from '@material-ui/icons/Delete';
+const fs = require('fs');
 
 /** LoginUserForm Component displays form to log in existing user */
 class ProfilePicture extends Component {
@@ -12,14 +14,16 @@ class ProfilePicture extends Component {
         super(props);
         this.state = {
             openUpload: false,
+            openDelete: false,
             open: false,
             message: "",
             snackcolor: "error",
         };
+
         this.handleSubmit = this.handleSubmit.bind(this);
         this.uploadImage = this.uploadImage.bind(this);
-        
-    }   
+    };
+
 
     uploadImage () {
         var form = document.getElementById("myform");
@@ -31,9 +35,12 @@ class ProfilePicture extends Component {
                 this.setState({ snackcolor: "success", message: "Successfully updated profile picture!", open: true, openUpload: false })
             }
         })
-      }
+    }
 
-    
+    removeImage () {
+        this.setState({ snackcolor: "success", message: "Successfully removed profile picture!", open: true, openDelete: false })
+    }
+
     //Submit provided login data
     handleSubmit(event){ 
         event.preventDefault();
@@ -42,9 +49,10 @@ class ProfilePicture extends Component {
     render() {
         
         const { classes, userid, own } = this.props;
-        let settings = null;
+        let settings, del = null;
         if(own){
-            settings = <SettingsIcon style={{ position: "absolute", top: 0, right: 0 }} onClick={() => this.setState({ openUpload: true })}></SettingsIcon>
+            settings = <SettingsIcon style={{ position: "absolute", top: 0, right: 30 }} onClick={() => this.setState({ openUpload: true })}></SettingsIcon>
+            del = <DeleteIcon style={{ position: "absolute", top: 0, right: 0 }} onClick={() => this.setState({ openDelete: true })}></DeleteIcon>
         }
 
         return (
@@ -73,6 +81,29 @@ class ProfilePicture extends Component {
                     </Button>
                     </DialogActions>
                 </Dialog>
+
+                {del}
+                <Dialog
+                    open={this.state.openDelete}
+                    onClose={() => this.setState({ openUpload: false })}
+                >
+                    <DialogTitle>{"Do you really want to remove your profile picture?"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            This will delete your profile picture.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => this.setState({ openDelete: false })} color="primary">
+                            Disagree
+                        </Button>
+                        <Button color="primary" autoFocus onClick={() => this.removeImage()}>
+                            Agree
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+
                 <SnackbarMessage
                     open={this.state.open}
                     onClose={() => this.setState({ open: false })}
