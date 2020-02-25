@@ -51,7 +51,7 @@ const useStyles = theme => ({
         backgroundColor: theme.palette.secondary.main,
     },
     logoutButton: {
-        marginLeft: "150px",
+        marginLeft: "210px",
         color: "white",
         borderColor: "white",
     },
