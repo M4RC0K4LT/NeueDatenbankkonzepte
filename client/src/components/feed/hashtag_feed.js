@@ -74,13 +74,19 @@ class HashtagFeedPosts extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.tag !== prevProps.tag) {
-      this.socket.removeAllListeners();
+      this.socket.off("post");
+      this.socket.off("previous posts")
+      this.socket.off("newlike");
+      this.socket.off("removelike")
       this.componentDidMount()
     }
   }
 
   componentWillUnmount(){
-    this.socket.removeAllListeners();
+    this.socket.off("post");
+    this.socket.off("previous posts")
+    this.socket.off("newlike");
+    this.socket.off("removelike")
     this.socket.emit("leave hashtag", this.props.tag);
   }
 

@@ -51,7 +51,6 @@ const useStyles = theme => ({
         backgroundColor: theme.palette.secondary.main,
     },
     logoutButton: {
-        marginLeft: "210px",
         color: "white",
         borderColor: "white",
     },
@@ -71,7 +70,7 @@ const useStyles = theme => ({
         padding: "15px",
         margin: "0",
         marginTop: "30px",
-        maxWidth: "75%",
+        maxWidth: "60%",
     },
 
     privateMessage: {
@@ -120,7 +119,28 @@ const useStyles = theme => ({
     backdrop: {
         zIndex: theme.zIndex.drawer + 1,
         color: '#fff',
-    }
+    },
+    cssLabel: {
+        color: "white"
+      },
+    
+    cssOutlinedInput: {
+        '&$cssFocused $notchedOutline': {
+            borderColor: `${theme.palette.primary.main}`,
+        },
+        "&:hover:not($disabled):not($focused):not($error) $notchedOutline": {
+            borderColor: "white"
+        },
+        color: "white"
+    },
+
+    cssFocused: { },
+
+    notchedOutline: {
+        borderWidth: '1px',
+        borderColor: 'white',
+        color: "white"
+    },
 });
 
 /**

@@ -84,6 +84,7 @@ module.exports = {
     async getMostUsedHashtags(socket){
         let mostHashtags = await db.zrangeAsync(individualPath + "hashtags", 0, 10, "WITHSCORES");
         socket.emit("hashtagstats", mostHashtags);
+        socket.broadcast.emit("hashtagstats", mostHashtags);
     },
 
     async create(jsonObject, socket, io){
@@ -105,6 +106,7 @@ module.exports = {
                 let toAllHashtags = await db.zincrbyAsync(individualPath + 'hashtags', 1, value);
                 let toHashtagList = await db.zaddAsync(individualPath + "hashtag:" + value, now, uniquePostID);
                 io.sockets.in("hashtag-" + value).emit("post", JSON.stringify(newpost));
+                module.exports.getMostUsedHashtags(socket);
             }
         }
         io.sockets.in("global").emit('post', JSON.stringify(newpost));

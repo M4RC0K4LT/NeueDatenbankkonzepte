@@ -49,10 +49,12 @@ function Asynchronous(props) {
         }
     }, [open]);
 
+    const { classes } = props;
+
     return (
         <Autocomplete
             className={props.classes.searchBar}
-            style={{ width: 300}}
+            style={{ width: 300 }}
             open={open}
             onOpen={() => setOpen(true)}
             onClose={() => {
@@ -63,29 +65,42 @@ function Asynchronous(props) {
             options={options}
             loading={loading}
             autoComplete={true}
-            autoHighlight={true}
-            autoSelect={true}
             value={selected}
+            forcePopupIcon={false}
             onChange={(e, value) => {
                 handleClick(value)
             }}
             size="small"
             renderInput={params => (
                 <TextField
-                {...params}
-                variant="standard"
-                size="small"
-                placeholder="Search..."
-                style={{ }}
-                InputProps={{                 
-                    ...params.InputProps,
-                    endAdornment: (
-                        <React.Fragment>
-                            {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                            {params.InputProps.endAdornment}
-                        </React.Fragment>
-                    ),
-                }}
+                    {...params}
+                    variant="outlined"
+                    size="small"
+                    placeholder="Search..."
+                    
+                    InputProps={{    
+                        classes: {
+                            root: classes.cssOutlinedInput,
+                            notchedOutline: classes.notchedOutline,
+                            focused: classes.cssFocused,
+                        },             
+                        ...params.InputProps,
+                        endAdornment: (
+                            <React.Fragment>
+                                {loading ? <CircularProgress size={20} /> : null}
+                                {params.InputProps.endAdornment}
+                            </React.Fragment>
+                        ),
+                        
+                    }}
+                    InputLabelProps={{
+                        classes: {
+                            root: classes.cssLabel,
+                            notchedOutline: classes.notchedOutline,
+                            focused: classes.cssFocused,
+                        },
+                    }}
+                
                 />
             )}
         />

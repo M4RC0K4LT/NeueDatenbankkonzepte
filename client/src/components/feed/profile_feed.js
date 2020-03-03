@@ -77,13 +77,19 @@ class ProfileFeed extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.id !== prevProps.id) {
-      this.socket.removeAllListeners();
+      this.socket.off("post");
+      this.socket.off("previous posts")
+      this.socket.off("newlike");
+      this.socket.off("removelike")
       this.componentDidMount()
     }
   }
 
   componentWillUnmount(){
-    this.socket.removeAllListeners();
+    this.socket.off("post");
+    this.socket.off("previous posts")
+    this.socket.off("newlike");
+    this.socket.off("removelike")
     var userid = this.props.id;
     this.setState({ response: [] })
     this.socket.emit("leave", userid)

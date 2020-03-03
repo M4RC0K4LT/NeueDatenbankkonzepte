@@ -50,8 +50,17 @@ class Profile extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.match.params.id !== prevProps.match.params.id) {
-          this.componentDidMount()
+            this.socket.off("getUserDataReturn");
+            this.socket.off("addfollower")
+            this.socket.off("removefollower");
+            this.componentDidMount()
         }
+    }
+
+    componentWillUnmount(){
+        this.socket.off("getUserDataReturn");
+        this.socket.off("addfollower")
+        this.socket.off("removefollower");
     }
 
     render() {

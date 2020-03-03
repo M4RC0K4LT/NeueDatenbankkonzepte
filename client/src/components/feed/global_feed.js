@@ -74,7 +74,10 @@ class GlobalFeedPosts extends Component {
   }
 
   componentWillUnmount(){
-    this.socket.removeAllListeners();
+    this.socket.off("post");
+    this.socket.off("previous posts")
+    this.socket.off("newlike");
+    this.socket.off("removelike")
     this.socket.emit("leave", "global")
   }
 

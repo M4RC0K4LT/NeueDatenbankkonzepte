@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { List, ListItem, ListItemText, ListItemSecondaryAction, withStyles, Container, Typography } from '@material-ui/core';
+import { List, ListItem, ListItemText, ListItemSecondaryAction, withStyles, Container, Typography, ListItemIcon } from '@material-ui/core';
 import { useStyles, SocketContext } from '../exports'
 import {  Redirect, useHistory, Link } from 'react-router-dom';
 
@@ -28,12 +28,12 @@ class ShowRecentHashtags extends Component {
                   result.push(array.slice(index, index + 2));
                 return result;
             }, []);
-            this.setState({ recentTags: newlist.reverse() });
+            this.setState({ recentTags: newlist.reverse().slice(0, 5) });
         }));
     }
 
     componentWillUnmount(){
-        this.socket.removeAllListeners();
+        this.socket.off("hashtagstats");
     }
 
     render() {
@@ -48,11 +48,9 @@ class ShowRecentHashtags extends Component {
                 <List>
                     {this.state.recentTags.map((value, i) => {
                         return (
-                        <ListItem alignItems="flex-start" key={i} button component={Link} style={{ textDecoration: "none", color: "#64b5f6" }} to={"/hashtags/" + value[0]}>
-                            <ListItemText id={value.id} primary={"#" + value[0]} />
-                            <ListItemSecondaryAction>
-                                {value[1]}
-                            </ListItemSecondaryAction>
+                        <ListItem alignItems="flex-start" key={i} button component={Link} style={{ textDecoration: "none"  }} to={"/hashtags/" + value[0]}>
+                            <ListItemIcon style={{ width: "fit-content" }}><div style={{ width: "5px" }}>{i+1 + "."}</div></ListItemIcon> 
+                            <ListItemText id={value.id} style={{ color: "#64b5f6" }} primary={"#" + value[0]} />
                         </ListItem>
                         );
                     })}

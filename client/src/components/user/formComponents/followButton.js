@@ -42,6 +42,10 @@ class FollowButton extends Component {
         }))
     }
 
+    componentWillUnmount(){
+        this.socket.off("isfollowingReturn");
+    }
+
     render(){
         const { follow } = this.state;
 

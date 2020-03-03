@@ -25,6 +25,10 @@ class HashtagStats extends Component {
         }));
     }
 
+    componentWillUnmount(){
+        this.socket.off(("hashtagstats"))
+    }
+
     render() {
         return (
             <div>

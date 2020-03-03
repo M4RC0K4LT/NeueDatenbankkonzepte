@@ -45,7 +45,8 @@ class FriendsChat extends Component {
 
   componentDidUpdate(prevProps){
     if (this.props.friendsid !== prevProps.friendsid) {
-      this.socket.removeAllListeners();
+      this.socket.off("post");
+      this.socket.off("previous posts")
       this.socket.emit("leave private", prevProps.friendsid)
       this.setState({ response: [] })
       this.componentDidMount()   
@@ -55,7 +56,8 @@ class FriendsChat extends Component {
   }
 
   componentWillUnmount() {
-    this.socket.removeAllListeners();
+    this.socket.off("post");
+    this.socket.off("previous posts")
     this.socket.emit("leave private", this.props.friendsid)
   }
 

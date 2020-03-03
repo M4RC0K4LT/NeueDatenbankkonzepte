@@ -126,7 +126,12 @@ class ShowFollowedUsers extends Component {
     }
 
     componentWillUnmount(){
-        //this.socket.removeAllListeners();
+        this.socket.off("returnFriend");
+        this.socket.off("removeFriend")
+        this.socket.off("goesonline");
+        this.socket.off("goesoffline");
+        this.socket.off("newmessageread");
+        this.socket.off("newmessage");
     }
 
     render() {
