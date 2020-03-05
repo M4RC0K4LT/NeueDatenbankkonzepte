@@ -151,8 +151,8 @@ class ShowFollowedUsers extends Component {
                                 <StyledBadge
                                     overlap="circle"
                                     anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'right',
+                                        vertical: 'bottom',
+                                        horizontal: 'right',
                                     }}
                                     variant="dot"
                                     invisible={!value.online}
@@ -163,7 +163,7 @@ class ShowFollowedUsers extends Component {
                             <ListItemText id={value.id} primary={value.username} />
                             <ListItemSecondaryAction>
                                 <IconButton component={Link} to={"/private/" + value.id}>
-                                <Badge variant="dot" color="primary" invisible={value.newmessage == 1 ? false : true}>
+                                <Badge variant="dot" color="secondary" invisible={value.newmessage == 1 ? false : true}>
                                     <ChatIcon></ChatIcon>
                                 </Badge>
                                 </IconButton>

@@ -4,7 +4,6 @@ import { TextField, Button, withStyles, InputAdornment} from '@material-ui/core'
 import { Image as ImageIcon } from '@material-ui/icons';
 import PostPicture from './postPicture'
 
-var jwtDecode = require('jwt-decode');
 
 
 class NewCommentForm extends Component {
@@ -35,7 +34,7 @@ class NewCommentForm extends Component {
         }
 
         this.socket.emit('new globalpost', JSON.stringify({ content: this.state.newpost, picture: this.state.filename }));
-        this.setState({ error: false, newpost: "" });
+        this.setState({ error: false, newpost: "", filename: "", picture_included: false });
     }
 
     render() {

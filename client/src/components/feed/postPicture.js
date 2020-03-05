@@ -59,10 +59,10 @@ class PostPicture extends Component {
                         </form>
                         </DialogContent>
                     <DialogActions>
-                    <Button onClick={this.props.onClose} color="primary">
+                    <Button onClick={this.props.onClose} color="secondary">
                         Abbrechen
                     </Button>
-                    <Button color="primary" autoFocus onClick={() => this.uploadImage()}>
+                    <Button color="secondary" autoFocus onClick={() => this.uploadImage()}>
                         Hinzufügen
                     </Button>
                     </DialogActions>

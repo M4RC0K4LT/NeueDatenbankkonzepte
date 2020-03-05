@@ -70,7 +70,7 @@ const useStyles = theme => ({
         padding: "15px",
         margin: "0",
         marginTop: "30px",
-        maxWidth: "60%",
+        maxWidth: "80%",
     },
 
     privateMessage: {
