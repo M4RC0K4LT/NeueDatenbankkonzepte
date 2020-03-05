@@ -13,97 +13,56 @@ const jwt = require('jsonwebtoken')
 var JWT_KEY = process.env.TOKEN;
 
 module.exports = {
-
-
-  /**
-   * Return all users.
-   * @return {Array} Full of single "UserJSONs". Currently not in use.
   
-  getAll: () => {
-    return new Promise((resolve, reject) => {
-      db.all(`SELECT user_id, user_name, user_mail FROM users`, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  },
- 
- 
-  /**
-   * Return user by mail. Currently just for existing mail check on user creation/update.
-   * @param {string} mail - Searched mailadress.
-   * @return {JSON} Userdata.
- 
-  findByMail: mail => {
-    return new Promise((resolve, reject) => {
-      db.get(`SELECT * FROM users WHERE user_mail = $mail`, {$mail: mail}, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  },
- 
- 
-  /**
-   * Return user by username. Currently just for existing username check on user creation/update.
-   * @param {string} username - Searched username.
-   * @return {JSON} Userdata.
- 
-  findByName: username => {
-    return new Promise((resolve, reject) => {
-      db.get(`SELECT * FROM users WHERE user_name = $username`, {$username: username}, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  },
- 
- 
   /**
    * Return user by ID.
    * @param {string} id - Searched UserID.
    * @return {JSON} Userdata.
+   */
  
-  findById: id => {
-    return new Promise((resolve, reject) => {
-      db.get(`SELECT * FROM users WHERE user_id = $id`, {$id: id}, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
+  async getAll(){
+    let users = await db.hgetallAsync(individualPath + "user");
+    let allusers = [];
+    for(user in users){
+      let daten = {"value": user, "id": users[user], "entity": "user" };
+      allusers.push(daten)
+    }
+    return allusers;
+  },
+
+ /**
+   * Return user by ID.
+   * @param {string} id - Searched UserID.
+   * @return {JSON} Userdata.
+   */
+ 
+  async findById(id, socket){
+    let username = await db.hgetAsync(individualPath + "user:" + id, "username");
+    if(username == null){
+      return(null)
+    }
+    let count_posts = await db.zcountAsync(individualPath + 'postByUserID:' + id, -Infinity, +Infinity);
+    let count_followers = await db.scardAsync(individualPath + "followers:" + id);
+    let count_following = await db.scardAsync(individualPath + "following:" + id);
+    let daten = {"id": id, "username": username, "posts": count_posts, "followers": count_followers, "following": count_following };
+    socket.emit("getUserDataReturn", JSON.stringify(daten));
   },
  
  
   /**
    * Return user by token. Used for returning own userdata in profile,... - based on Bearer Token (has to be splitted before).
    * @param {string} token - Searched Token.
-   * @return {JSON} Userdata with ! passwordhash !.
- 
-  findByToken: token => {
-    return jwt.verify(token, JWT_KEY, async (err, userid) => {
-      if(err){
-        return ({"request": "failed", "error": err.message});
-      }
-      user = await module.exports.findById(parseInt(userid));
-      if(user == null || user.user_tokens != token){
-        return ({"request": "failed", "error": "Kein gültiger UserToken"})
-      }  
-      return ({"request": "successful", "user_id": user.user_id, "user_name": user.user_name, "user_mail": user.user_mail, "user_password": user.user_password}); 
-    });
-    
-     
+   * @return {JSON} Userdata with ! passwordhash !. 
+   */
+  async getFriends(id, socket){
+    let friendsids = await db.smembersAsync(individualPath + "following:" + id)
+    for(friend of friendsids){
+      let frienddata = await db.hgetAsync(individualPath + "user:" + friend, "username")
+      let online = await db.sismemberAsync(individualPath + "onlineUsers", friend);
+      let unreadchat = await db.sismemberAsync(individualPath + "UserChatsUnread:" + id, friend)
+      let data = {"id": friend, "username": frienddata, "online": online, "newmessage": unreadchat}
+      socket.emit("returnFriend", JSON.stringify(data));
+    }
   },
  
  
@@ -120,7 +79,7 @@ module.exports = {
           return reject(err);
         }
         else {
-          if (result == null) {
+          if (result[0] == null) {
             return reject({ "error": "Ungültige Eingaben" });
           } else {
             var id = result[0];
@@ -128,7 +87,6 @@ module.exports = {
               if (err) {
                 return reject(err);
               }
-              console.log(result)
               if (result != null) {
                 var correct = bcrypt.compareSync(password, result.password);
                 if (correct == true) {
@@ -151,21 +109,15 @@ module.exports = {
    * @param {string} followed_user - User(ID) that should be followed.
    * @return {}  
    */
-  follow(acting_user, followed_user) {
-
-    return new Promise((resolve, reject) => {
-      db.sadd(individualPath + "following:" + acting_user, followed_user, function (err, res) {
-        if (err) {
-          return reject(err)
-        }
-        db.sadd(individualPath + "followers:" + followed_user, acting_user, function (err, res) {
-          if (err) {
-            return reject(err)
-          }
-          resolve(res)
-        })
-      })
-    })
+  async follow(acting_user, followed_user, socket, io) {
+    await db.saddAsync(individualPath + "following:" + acting_user, followed_user);
+    await db.saddAsync(individualPath + "followers:" + followed_user, acting_user);
+    let frienddata = await db.hgetAsync(individualPath + "user:" + followed_user, "username")
+    let online = await db.sismemberAsync(individualPath + "onlineUsers", followed_user);
+    let unreadchat = await db.sismemberAsync(individualPath + "UserChatsUnread:" + acting_user, followed_user)
+    let data = {"id": followed_user, "username": frienddata, "online": online, "newmessage": unreadchat}
+    socket.emit("returnFriend", JSON.stringify(data));
+    io.emit("addfollower", followed_user)
   },
 
   /**
@@ -174,21 +126,12 @@ module.exports = {
    * @param {string} followed_user - User(ID) that should be followed.
    * @return {}  
    */
-  unfollow(acting_user, followed_user) {
+  async unfollow(acting_user, followed_user, socket, io) {
 
-    return new Promise((resolve, reject) => {
-      db.srem(individualPath + "following:" + acting_user, followed_user, function (err, res) {
-        if (err) {
-          return reject(err)
-        }
-        db.srem(individualPath + "followers:" + followed_user, acting_user, function (err, res) {
-          if (err) {
-            return reject(err)
-          }
-          resolve(res)
-        })
-      })
-    })
+    await db.sremAsync(individualPath + "following:" + acting_user, followed_user);
+    await db.sremAsync(individualPath + "followers:" + followed_user, acting_user);
+    socket.emit("removeFriend", followed_user);
+    io.emit("removefollower", followed_user)
   },
 
   /**
@@ -197,16 +140,13 @@ module.exports = {
    * @param {string} watched_user - User(ID) that should be followed.
    * @return {int} 1 or 0 (true or false) 
    */
-  isfollowing(acting_user, watched_user) {
-
-    return new Promise((resolve, reject) => {
-      db.sismember(individualPath + "following:" + acting_user, watched_user, function (err, res) {
-        if (err) {
-          return reject(err)
-        }
-        resolve(res)
-      })
-    })
+  async isfollowing(acting_user, watched_user, socket) {
+    let follows_int = await db.sismemberAsync(individualPath + "following:" + acting_user, watched_user)
+    let follows = false;
+    if(follows_int == 1){
+      follows = true;
+    }
+    socket.emit("isfollowingReturn", follows)
   },
 
   /**
@@ -222,6 +162,43 @@ module.exports = {
     }
     return friends;
   },
+
+  /**
+   * Follow another user
+   * @param {string} acting_user - User(ID) that wants to follow another user.
+   * @param {string} socket - User(ID) that should be followed.
+   * @return {int} 1 or 0 (true or false) 
+   */
+  async setOnline(acting_user) {
+    var online = await db.saddAsync(individualPath + "onlineUsers", acting_user);
+    return online;
+  },
+
+
+  /**
+   * Follow another user
+   * @param {string} acting_user - User(ID) that wants to follow another user.
+   * @param {string} socket - User(ID) that should be followed.
+   * @return {int} 1 or 0 (true or false) 
+   */
+  async setOffline(acting_user) {
+    var offline = await db.sremAsync(individualPath + "onlineUsers", acting_user);
+    return offline;
+  },
+
+  /**
+   * Follow another user
+   * @param {string} acting_user - User(ID) that wants to follow another user.
+   * @param {string} socket - User(ID) that should be followed.
+   * @return {int} 1 or 0 (true or false) 
+   */
+  async getOnlineUsers() {
+    var onlineUsers = await db.smembersAsync(individualPath + "onlineUsers");
+    console.log(onlineUsers)
+    return onlineUsers;
+  },
+
+
 
   /**
     * Follow another user
@@ -282,71 +259,4 @@ module.exports = {
       })
     })
   },
-
-
-  /**
-   * Update existing user data by ID.
-   * @param {string} id - UserID to change.
-   * @param {JSON} jsonObject - Updated Values.
-   * @return {JSON} Updated UserData.
-  update: (id, jsonObject) => {  
-    var password = bcrypt.hashSync(jsonObject.password, 8);
-    return new Promise((resolve, reject) => {
-        id = parseInt(id);
-        
-        db.run(
-            
-          `UPDATE users SET user_name = $name, user_mail = $mail, user_password = $password WHERE user_id = $id`, 
-          {
-            $name: jsonObject.name,
-            $mail: jsonObject.mail,
-            $password: password,
-            $token: jsonObject.token,
-            $id: id
-          },
-          function (err) {
-            if (err) {
-              reject({"error": err.message});
-            }
-            db.get(`SELECT * FROM users WHERE user_id = $id`, {$id: id}, (err, result) => {
-              if (err) {
-                reject({"error": err.message});
-              } else {
-                resolve(result);
-              }
-            });
-          }
-        )
-    });
-  },
- 
- 
-  /**
-   * Remove user by ID. Currently not in use
-   * @param {string} id - UserID to remove correct oject.
-   * @return {Boolean} Success - yes or no.
- 
-  remove: id => {
-    return new Promise((resolve, reject) => {
-        id = parseInt(id);
-        db.get(`SELECT * FROM users WHERE user_id = $id`, {$id: id}, (err, result) => {
-            if (err) {
-              reject({"error": err.message});
-            } else {
-              if (result != null){
-                db.run(          
-                    `DELETE FROM users WHERE user_id = $id`, {$id: id}, (err, result) => {
-                      if (err) {
-                        reject(false);
-                      } else {
-                        resolve(true);
-                      }
-                });
-              } else{
-                  reject({"error": "Kein gültiger User"});
-              }
-            }
-          });      
-    });
-  }, */
 };

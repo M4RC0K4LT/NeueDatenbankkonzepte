@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Post, SocketContext } from "../exports";
-import { Typography } from '@material-ui/core';
+import { Post, SocketContext, useStyles } from "../exports";
+import { Typography, Backdrop, CircularProgress, withStyles } from '@material-ui/core';
 
 class ProfileFeed extends Component {
   constructor() {
@@ -9,20 +9,18 @@ class ProfileFeed extends Component {
       response: [],
       newpost: "",
       error: null,
+      loading: false,
     };
     this.socket = SocketContext;
     this.handleLike = this.handleLike.bind(this);
   }
 
-  onLike(id){
-    console.log("test");
-  }
-
   componentDidMount() {
     
-    let { response } = this.state
     var userid = this.props.id;
 
+    this.setState({ loading: true })
+    this.props.startLoading();
     this.socket.emit("join", userid)
 
 
@@ -33,11 +31,18 @@ class ProfileFeed extends Component {
       this.setState({ response: previous });
     }));
 
+    this.socket.on('previous posts', (rawPost => {
+      this.setState({ loading: false })
+      this.props.endLoading()
+      this.setState({ response: rawPost });
+    }));
+
     this.socket.on('error', (err) => {
       this.setState({ error: "-- "+err+" --" });
     });
 
     this.socket.on("newlike", (postid) => {
+      let { response } = this.state;
       for (var i = 0; i < response.length; i++) {
         if(response[i].postid == postid){
           response[i].likes = parseInt(response[i].likes)+1;
@@ -48,6 +53,7 @@ class ProfileFeed extends Component {
     }) 
     
     this.socket.on("removelike", (postid) => {
+      let { response } = this.state;
       for (var i = 0; i < response.length; i++) {
         if(response[i].postid == postid){
           response[i].likes = parseInt(response[i].likes)-1;
@@ -69,29 +75,43 @@ class ProfileFeed extends Component {
     this.setState({ response }); 
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.id !== prevProps.id) {
+      this.socket.off("post");
+      this.socket.off("previous posts")
+      this.socket.off("newlike");
+      this.socket.off("removelike")
+      this.componentDidMount()
+    }
+  }
+
   componentWillUnmount(){
+    this.socket.off("post");
+    this.socket.off("previous posts")
+    this.socket.off("newlike");
+    this.socket.off("removelike")
     var userid = this.props.id;
+    this.setState({ response: [] })
     this.socket.emit("leave", userid)
   }
 
   render() {
-    const { response, error } = this.state;
+    const { response, error, loading } = this.state;
     let showposts = null;
     
-    if(response.length === 0 || response == null || typeof response != "object" ){
+    if((response.length === 0 || response == null || typeof response != "object") && (loading == false)){
       showposts = (
         <div>
-          ProfileFeed
-          <Typography variant="h4">No Posts :/</Typography>
-          <Typography variant="subtitle1">This user has not posted yes!</Typography>
-          <Typography variant="h6">{error}</Typography>
+          <Typography variant="h4"align="center">Sorry - This user is boring :/</Typography>
+          <br></br>
+          <Typography variant="subtitle1" align="center">This user did not post anything yet!</Typography>
+          <Typography variant="h6" align="center">{error}</Typography>
         </div>
       )
     } else {
 
       showposts = (
         <div>
-          ProfileFeed
           {response.map((data, i)=> (
             <Post 
               key={i}
@@ -102,6 +122,7 @@ class ProfileFeed extends Component {
               username={data.username}
               userid={data.userid}
               timestamp={data.timestamp}
+              picture={data.picture}
               handleLike={() => this.handleLike(data.postid, i)}>
             </Post>         
         ))}
@@ -112,4 +133,4 @@ class ProfileFeed extends Component {
   }
 }
 
-export default ProfileFeed;
+export default withStyles(useStyles) (ProfileFeed);

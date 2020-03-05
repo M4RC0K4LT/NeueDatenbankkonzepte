@@ -1,8 +1,10 @@
-import React from 'react';
-import { Link } from 'react-router-dom'
-import { Typography, AppBar, CssBaseline, Drawer, Hidden, IconButton, Toolbar, useTheme, withStyles, List, ListItem, ListItemText, Button } from '@material-ui/core';
-import { MenuOutlined as MenuOutlinedIcon } from '@material-ui/icons';
+import React, { useState } from 'react';
+import { Typography, AppBar, CssBaseline, Drawer, Hidden, IconButton, Toolbar, useTheme, withStyles, List, ListItem, ListItemText, Button, createMuiTheme, MuiThemeProvider, Switch, Grid } from '@material-ui/core';
+import { MenuOutlined as MenuOutlinedIcon, Brightness2 as Brightness2Icon, Brightness7 as Brightness7Icon, ExitToApp as ExitToAppIcon } from '@material-ui/icons';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import useStyles from './useStyles';
+import { Link } from "react-router-dom";
+import Asynchronous from './searchBar'
 
 //Handle order delete
 function handleLogout() {
@@ -13,52 +15,92 @@ function handleLogout() {
 /** Responsible for suitable page-navigation regarding device width */
 function ResponsiveDrawer(props) {
 
-    const { container, classes, content } = props;
-    const theme = useTheme();
+    const { container, classes, content, loc } = props;
+    const themex = useTheme();
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
 
+    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+    const [dark, setdark] = useState({ prefersDarkMode });
+    const theme = 
+        createMuiTheme({
+            palette: {
+                type: dark ? 'dark' : 'light',
+            }});
+
+
     /** Logout Button */
     let logout = null;
-    if (!(window.location.pathname === "/login" || window.location.pathname === "/")) {
+    let searchbar = null;
+    if (!(loc === "/login" || loc === "/register")) {
         logout = (
-            <Button variant="contained" size="small" className={classes.logoutButton} onClick={handleLogout}>
-                Logout
-            </Button>
+            <IconButton onClick={handleLogout} style={{ color: "white" }}>
+                <ExitToAppIcon></ExitToAppIcon>
+            </IconButton>
+        )
+        searchbar = (
+            <Asynchronous dark={dark}></Asynchronous>
         )
     }
 
+    
+
+    let darkmode = <Brightness2Icon></Brightness2Icon>;
+    if(dark){
+        darkmode = <Brightness7Icon></Brightness7Icon>
+    }
+
     return (
+        <MuiThemeProvider theme={theme}>
         <div className={classes.root}>
             <CssBaseline />
 
             {/** AppBar - Toolbar on page header: Hidden above MaterialUI size "md" */}
             <AppBar position="absolute" className={classes.appBar}>
-                <Toolbar>
                     <Hidden mdUp implementation="css">
-                        <IconButton
-                            color="inherit"
-                            edge="start"
-                            onClick={handleDrawerToggle}
-                            className={classes.menuButton}
-                        >
-                            <MenuOutlinedIcon />
-                        </IconButton>
+                        <Toolbar>
+                            <IconButton
+                                color="inherit"
+                                edge="start"
+                                onClick={handleDrawerToggle}
+                                className={classes.menuButton}
+                            >
+                                <MenuOutlinedIcon />
+                            </IconButton>
+                            <Typography variant="h5" className={classes.title}><Link style={{ textDecoration: "none", color: "inherit" }} to="/">Tweety</Link></Typography>
+                        </Toolbar>
                     </Hidden>
-                    <Typography variant="h6" className={classes.title}><Link style={{ textDecoration: "none", color: "inherit" }} to="/">Tweety</Link></Typography>
+                    
                     <Hidden smDown implementation="css">
                         <Toolbar>
-                            <Typography variant="subtitle2" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/feed">Feed</Link></Typography>
-                            <Typography variant="subtitle2" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/personal">Personal</Link></Typography> 
-                            <Typography variant="subtitle2" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/profile">Profile</Link></Typography>    
-                            {logout}                        
-                        </Toolbar>
-                        
+                                <Grid container item>
+                                
+                                    <Toolbar style={{ padding: 0, margin: 0 }}>
+                                        <Typography variant="h5" className={classes.title}><Link style={{ textDecoration: "none", color: "inherit" }} to="/">Tweety</Link></Typography>
+                                        <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/feed">Feed</Link></Typography>
+                                        <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/personal">Personal</Link></Typography> 
+                                        <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit" }} to="/hashtags">Tags</Link></Typography> 
+                                        <Typography variant="subtitle1" className={classes.subtitle}><Link style={{ textDecoration: "none", color: "inherit", marginRight: "30px" }} to="/profile">Profile</Link></Typography>
+                                    </Toolbar>
+                                </Grid>
+                                <Grid container item justify="center">
+                                    <Toolbar style={{ padding: 0, margin: 0 }}>
+                                        {searchbar}
+                                    </Toolbar>
+                                </Grid>
+                                <Grid container item justify="flex-end">
+                                    <Toolbar style={{ padding: 0, margin: 0 }}>
+                                        <IconButton onClick={() => dark ? setdark(false) : setdark(true)} style={{ color: "white" }}>
+                                            {darkmode}
+                                        </IconButton>
+                                        <Typography>{logout}</Typography>
+                                    </Toolbar>
+                                </Grid>    
+                        </Toolbar>               
                     </Hidden>
-                </Toolbar>
             </AppBar>
 
             {/** Mobile Navigation */}
@@ -66,7 +108,7 @@ function ResponsiveDrawer(props) {
                 <Drawer
                     container={container}
                     variant="temporary"
-                    anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+                    anchor={themex.direction === 'rtl' ? 'right' : 'left'}
                     open={mobileOpen}
                     onClick={handleDrawerToggle}
                     onClose={handleDrawerToggle}
@@ -78,19 +120,25 @@ function ResponsiveDrawer(props) {
                     }}
                 >
                     <List>
-                        <ListItem button key={1} component={Link} to={"/feed"} >
+                        <ListItem button key={1} component={Link} style={{ color: "inherit" }} to={"/feed"} >
                             {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Feed"} />
                         </ListItem>
                     </List>
                     <List>
-                        <ListItem button key={2} component={Link} to={"/personal"} >
+                        <ListItem button key={2} component={Link} style={{ color: "inherit" }} to={"/personal"} >
                             {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Personal"} />
                         </ListItem>
                     </List>
                     <List>
-                        <ListItem button key={3} component={Link} to={"/profile"} >
+                        <ListItem button key={3} component={Link} style={{ color: "inherit" }} to={"/hashtags"} >
+                            {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
+                            <ListItemText primary={"Tags"} />
+                        </ListItem>
+                    </List>
+                    <List>
+                        <ListItem button key={4} component={Link} style={{ color: "inherit" }} to={"/profile"} >
                             {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Profil"} />
                         </ListItem>
@@ -105,12 +153,15 @@ function ResponsiveDrawer(props) {
             </nav>
 
             {/** Website content next to drawer (passed as props) */}
-            <main className={classes.content}>
-                <div className={classes.toolbar} />
-                {content}
-            </main>
+            
+                <main className={classes.content}>
+                    <div className={classes.toolbar} />
+                    {content}
+                </main>
+            
 
         </div>
+        </MuiThemeProvider>
     );
 }
 

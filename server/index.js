@@ -1,100 +1,35 @@
-const app = require('express')();
-const http = require('http').createServer(app);
-const bodyParser = require('body-parser');
-const io = require('socket.io')(http);
-require("dotenv").config()
+const express = require("express");
+const app = express();
 
-individualPath = "gruppe-kann-nix-50-";
+/** Individual database path as prefix of all entries */
+individualPath = "gruppe-kann-nix-57-";
 
-const db = require('./database/redis');
-
-const userapi = require("./routes/usersapi");
-
-//const postsapi = require('./routes/postsapi'); -> Not used
-//app.use("/post", postsapi);
-
+/** Cors options */
 const cors = require('cors')
 app.use(cors());
 app.options('*', cors())
 
+/** Optional Packages */
+const http = require("http").createServer(app);
+const bodyParser = require('body-parser');
+require("dotenv").config()
+
+/** Initialize Sockets for communication */
+const basic_sockets = require('./routes/sockets');
+basic_sockets.initializeSockets(http)
+
+/** Initialize API Requests (just for login, register, profile-picture ) */
+const userapi = require("./routes/usersapi");
 app.use(bodyParser.json());
 app.use("/user", userapi);
 
+/** Express serve static files */ 
+app.use('/profilePics', express.static(__dirname + '/public/profilePics'));
+app.use('/postPics', express.static(__dirname + '/public/postPics'))
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
-app.get('/', (req, res) => {
-    res.send('It works!');
-});
-
-const posts = require('./database/posts');
-const user = require('./database/users');
-
-const socketauth = require("./routes/auth");
-
-io.use(socketauth)
-
-io.on('connection', socket => {
-
-    console.log(`User ${socket.decoded.name} connected to main socket.`);
-
-    // Wait for post event
-    socket.on('new globalpost', async postAsJson => {
-        const post = JSON.parse(postAsJson);
-
-        // Save post in redis
-        var id = await posts.create(post);
-        let newpost = Object.assign({"postid": id.toString(), "liked": false, "likes": "0"}, post);
-
-        // Send Post to everyone
-        io.sockets.in("global").emit('post', JSON.stringify(newpost));
-        io.sockets.in(socket.decoded.id).emit('post', JSON.stringify(newpost));
-    });
-
-    socket.on('leave', function(room){
-        if(room === "followers"){
-            user.leaveFriendsRoom(socket.decoded.id, socket);
-        }else {
-            socket.leave(room)
-            console.log(socket.decoded.name + " left room: " + room)
-        }      
-    })
-
-    socket.on('like', function(postid){
-        posts.likePost(postid, socket.decoded.id);
-        io.emit("newlike", postid.toString())
-    })
-
-    socket.on('removelike', function(postid){
-        posts.removePostLike(postid, socket.decoded.id);
-        io.emit("removelike", postid.toString())
-    })
-
-    socket.on('join', function(room){
-        socket.join(room);
-
-        if(room === "global"){
-            posts.getAll(socket);
-        }
-
-        if(room === "personal"){
-            user.getToFriendsRoom(socket.decoded.id, socket)
-            posts.getPersonalFeed(socket.decoded.id, socket);
-        }
-
-        else{
-            posts.getByUser(room, socket)
-        }
-
-        console.log(socket.decoded.name + " joined room: " + room)
-    })
-
-
-
-    socket.on('disconnect', (reason) => {
-        console.log(`User ${socket.decoded.name} has left the main socket. -> ${reason}.`);
-    });
-
-});
-
+/** Express start Backend-Server */
 http.listen(3000, function () {
     console.log('listening on *:3000');
 });

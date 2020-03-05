@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { Button, withStyles} from '@material-ui/core';
-import { useStyles, LoginFields} from '../exports'
+import { Link, Redirect } from 'react-router-dom';
+import { Button, withStyles, Backdrop, CircularProgress } from '@material-ui/core';
+import { useStyles, LoginFields, SnackbarMessage } from '../exports'
 import { postUser } from "../../api/exports";
 
 /** LoginUserForm Component displays form to log in existing user */
@@ -18,12 +18,13 @@ class LoginUserForm extends Component {
             success: false,
             username: "",
             password: "",
+            openLoading: false,
         };
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);     
+        this.handleInputChange = this.handleInputChange.bind(this);   
+        
     }   
-    
+
     //EventHandler: changing Value of controlled TextField
     handleInputChange(event) {
         const target = event.target;
@@ -32,22 +33,17 @@ class LoginUserForm extends Component {
         this.setState({ [name]: value });
     }
     
-    //Close Error/Success Message
-    handleSnackbarClose(){
-        this.setState({ open: false })
-    }
-    
     //Submit provided login data
     handleSubmit(event){ 
         event.preventDefault();
-        this.setState({ disablefields: true });
         const { username, password, } = this.state;
+        this.setState({ openLoading: true });
         postUser(username, password).then(data => {
             if(data.length<1 || data.request === "failed"){
-                this.setState({ open: true, snackcolor: "error", message: data.error, disablefields: false })
+                this.setState({ openLoading: false, snackcolor: "error", message: data.error, open: true })
             }else {
                 sessionStorage.setItem('authToken', data.token);
-                this.setState({ success: true })
+                this.setState({ openLoading: false, success: true })
             }
         })
     };
@@ -55,18 +51,17 @@ class LoginUserForm extends Component {
     render() {
         
         const { classes } = this.props;
-        const { success, disablefields, username, password } = this.state;
+        const { success, disablefields, username, password, openLoading } = this.state;
         
         //Successful Login
         if(success){
-            return window.location.replace("/feed");
+            return window.location.replace("/feed")
         }
 
         //Already logged in?
         if (sessionStorage.getItem("authToken") != null){
             return window.location.replace("/feed");
         }
-
         return (
             <div>
                 <form className={classes.form} onSubmit={this.handleSubmit}>
@@ -96,6 +91,15 @@ class LoginUserForm extends Component {
                     Registrieren
                 </Button>
                 </form>
+                <Backdrop className={classes.backdrop} open={openLoading}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
+                <SnackbarMessage
+                    open={this.state.open}
+                    onClose={() => this.setState({ open: false })}
+                    message={this.state.message}
+                    color={this.state.snackcolor}>
+                </SnackbarMessage>
             </div>
         );
     }

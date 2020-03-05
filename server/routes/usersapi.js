@@ -3,41 +3,77 @@
  * @module routes/userapi
  */
 
-
 /** Use Express and basic Router module */
 const express = require("express");
 const router = express.Router();
+const uuidv4 = require('uuid/v4');
 
 /** Database interaction */
-//const auth = require("./auth");
 const users = require("../database/users");
+const posts = require("../database/posts");
 
-/** GET: Current User`s data
-router.get('/', auth, async function(request, response) {
-    try {
-        const authHeader = request.headers["authorization"];
-        const token = authHeader && authHeader.split(" ")[1];
-        const userdetail = await users.findByToken(token);
-        if(userdetail.request === "successful"){
-            return response.status(200).send(userdetail);
-        }else {
-            return response.status(500).send(userdetail);
-        }       
-    } catch(err){
-        response.status(500).send(err);
-    }
-});
+/** Optional packages for image upload and jsonWebTokens */
+const multer = require('multer');
+const jwt = require('jsonwebtoken');
+var JWT_KEY = process.env.TOKEN;
 
-/** GET: Current User`s data
-router.get('/all', auth, async function(request, response) {
-    try {
-        const usersdata = await users.getAll();
-        return response.status(200).send(usersdata);
-    } catch(err){
-        let data = Object.assign({"request": "failed"}, err)
-        response.status(500).send(data);
+/** Storage location for Post-Images */
+const postStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb (null, "./public/postPics");
+    },
+    filename: function (req, file, cb) {
+        req.new_filename = req.unique_pic_id + "." + file.originalname.split(".").slice(-1)[0].toLowerCase();
+        cb(null, req.new_filename);
     }
-});
+})
+
+/** Storage location for Profile-Images */
+const profileStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb (null, "./public/profilePics");
+    },
+    filename: function (req, file, cb) {
+        cb(null, "user_" + req.userid + ".png");
+    }
+})
+
+const postPicPath = multer({storage: postStorage});
+const profilePicPath = multer({storage: profileStorage});
+
+
+/** Route for posting Post-Image */
+router.post('/postPicForm', function(req,res){
+    req.unique_pic_id = uuidv4();
+    var upload = postPicPath.single('postPic');
+    upload(req,res,function(err) {
+        if(err) {
+            return res.send({"request": "failed", "error": err});
+        }
+        res.send({"request": "successful", "uuid": req.new_filename});
+    });
+})
+
+/** Route for posting Profile-Image */
+router.post('/profilePicForm', function(req,res){
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    let id = null;
+    jwt.verify(token, JWT_KEY, function(err, decoded) {
+        if(err) {
+            return res.send({"request": "failed", "error": err});
+        }
+        id = decoded.id;
+    });
+    req.userid = id;
+    var upload = profilePicPath.single('profilePic');
+    upload(req,res,function(err) {
+        if(err) {
+            return res.send({"request": "failed", "error": err});
+        }
+        res.send({"request": "successful"});
+    });
+})
 
 /** POST: Login User -> Send Session Token */
 router.post('/login', async function(request, response) {
@@ -46,48 +82,7 @@ router.post('/login', async function(request, response) {
         let data = Object.assign({"request": "successful"}, login)
         response.status(200).send(data);       
     } catch (err) {
-        let data = Object.assign({"request": "failed"}, err)
-        response.status(500).send(data);
-    }
-});
-
-/** POST: Follow User */
-router.post('/follow', async function(request, response) {
-    try {
-        const follow = await users.follow(request.body.myid, request.body.otherid);
-        let data = Object.assign({"request": "successful"}, follow)
-        response.status(200).send(data);       
-    } catch (err) {
-        let data = Object.assign({"request": "failed"}, err)
-        response.status(500).send(data);
-    }
-});
-
-/** POST: Unfollow User */
-router.post('/unfollow', async function(request, response) {
-    try {
-        const unfollow = await users.unfollow(request.body.myid, request.body.otherid);
-        let data = Object.assign({"request": "successful"}, unfollow)
-        response.status(200).send(data);       
-    } catch (err) {
-        let data = Object.assign({"request": "failed"}, err)
-        response.status(500).send(data);
-    }
-});
-
-/** POST: Check if following */
-router.post('/isfollowing', async function(request, response) {
-    try {
-        const isfollowing = await users.isfollowing(request.body.myid, request.body.otherid);
-        var res = {};
-        if(isfollowing === 1){
-            res = {"result": "true"}
-        }else{
-            res = {"result": "false"}
-        }
-        let data = Object.assign({"request": "successful"}, res)
-        response.status(200).send(data);       
-    } catch (err) {
+        console.log(err)
         let data = Object.assign({"request": "failed"}, err)
         response.status(500).send(data);
     }
@@ -106,47 +101,11 @@ router.post('/register', async function(request, response) {
     }
 });
 
-/** DELETE: Logout -> Delete Session Token <- Just pre-implementation for "real", unique SessionTokens (Logout works without this request)
-router.delete('/logout', auth, async function(request, response){
-    try {
-        const authHeader = request.headers["authorization"];
-        const token = authHeader && authHeader.split(" ")[1];
-        const user = await users.logout(token);
-        let data = Object.assign({"request": "successful"}, user)
-        response.status(200).send(data);
-    } catch (err) {
-        let data = Object.assign({"request": "failed"}, err)
-        response.status(500).send(data);
-    }
+/** POST: Register new User */
+router.get('/search', async function(request, response) {
+        const user = await users.getAll();  
+        const post = await posts.getAllHashtags();  
+        return response.status(200).send(JSON.stringify(user.concat(post)));
 });
-
-/** PUT: Update UserData
-router.put('/change', auth, async function(request, response) {
-    try {
-        const authHeader = request.headers["authorization"];
-        const token = authHeader && authHeader.split(" ")[1];
-        const userdetail = await users.findByToken(token);
-        if(userdetail.request === "failed"){
-            return response.status(500).send(userdetail);
-        }
-
-        const existsname = await users.findByName(request.body.name)
-        const existsmail = await users.findByMail(request.body.mail)
-
-        if(existsname != null && existsname.user_id != userdetail.user_id){
-            return response.status(500).send({"request": "failed", "error": "Username schon vergeben"});
-        }        
-        if(existsmail != null && existsmail.user_id != userdetail.user_id){
-            return response.status(500).send({"request": "failed", "error": "Mailadresse schon registriert"});
-        }
-
-        const user = await users.update(userdetail.user_id, request.body);
-        let data = Object.assign({"request": "successful"}, user)
-        response.status(201).send(data);
-    } catch (err) {
-        let data = Object.assign({"request": "failed"}, err)
-        response.status(500).send(data);
-    }
-});  */
 
 module.exports = router;
