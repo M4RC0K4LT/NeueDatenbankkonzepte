@@ -6,6 +6,7 @@ import postIsFollowing from './postIsFollowing';
 import getFriends from './getFriends';
 import getUserInformation from './getUserInformation';
 import postProfilePicture from './postProfilePicture';
+import deleteProfilePicture from './deleteProfilePicture';
 import postPostPicture from './postPostPicture';
 
 /** Central API-Requests Export-File */
@@ -18,5 +19,6 @@ export {
     getFriends,
     getUserInformation,
     postProfilePicture,
+    deleteProfilePicture,
     postPostPicture
 }

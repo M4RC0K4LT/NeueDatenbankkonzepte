@@ -13,6 +13,7 @@ const users = require("../database/users");
 const posts = require("../database/posts");
 
 /** Optional packages for image upload and jsonWebTokens */
+const fs = require('fs');
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
 var JWT_KEY = process.env.TOKEN;
@@ -75,6 +76,25 @@ router.post('/profilePicForm', function(req,res){
     });
 })
 
+/** Route for removing Profile-Image */
+router.post('/delProfilePic', function(req, res) {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    let id = null;
+    jwt.verify(token, JWT_KEY, function(err, decoded) {
+        if(err) {
+            return res.send({"request": "failed", "error": err});
+        }
+        id = decoded.id;
+    });
+    req.userid = id;
+    fs.unlink("../server/public/profilePics/user_" + id + ".png", function(err) {
+        if (err) {
+           return res.send({"request": "failed", "error": err});
+        }
+    })
+})
+
 /** POST: Login User -> Send Session Token */
 router.post('/login', async function(request, response) {
     try {
@@ -83,7 +103,7 @@ router.post('/login', async function(request, response) {
         response.status(200).send(data);       
     } catch (err) {
         console.log(err)
-        let data = Object.assign({"request": "failed"}, err)
+        let data = Object.assign({"request": "failed"}, err);
         response.status(500).send(data);
     }
 });

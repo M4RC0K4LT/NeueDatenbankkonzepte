@@ -102,7 +102,7 @@ class ProfileFeed extends Component {
     if((response.length === 0 || response == null || typeof response != "object") && (loading == false)){
       showposts = (
         <div>
-          <Typography variant="h4"align="center">Sorry - This user is boring :/</Typography>
+          <Typography variant="h4"align="center">Sorry - This user has no posts :/</Typography>
           <br></br>
           <Typography variant="subtitle1" align="center">This user did not post anything yet!</Typography>
           <Typography variant="h6" align="center">{error}</Typography>
