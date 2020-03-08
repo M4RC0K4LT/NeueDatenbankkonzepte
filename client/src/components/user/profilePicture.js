@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { Avatar, Button, withStyles, Input, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Badge } from '@material-ui/core';
 import { useStyles, SnackbarMessage } from '../exports'
-import { postProfilePicture } from '../../api/exports'
+import { postProfilePicture, deleteProfilePicture } from '../../api/exports'
 import SettingsIcon from '@material-ui/icons/Settings';
 import DeleteIcon from '@material-ui/icons/Delete';
-const fs = require('fs');
 
 /** LoginUserForm Component displays form to log in existing user */
 class ProfilePicture extends Component {
@@ -13,6 +12,7 @@ class ProfilePicture extends Component {
     constructor(props){
         super(props);
         this.state = {
+            open: false,
             openUpload: false,
             openDelete: false,
             open: false,
@@ -38,6 +38,7 @@ class ProfilePicture extends Component {
     }
 
     removeImage () {
+        deleteProfilePicture();
         this.setState({ snackcolor: "success", message: "Successfully removed profile picture!", open: true, openDelete: false })
     }
 
@@ -73,10 +74,10 @@ class ProfilePicture extends Component {
                         </form>
                         </DialogContent>
                     <DialogActions>
-                    <Button onClick={() => this.setState({ openUpload: false })} color="primary">
+                    <Button onClick={() => this.setState({ openUpload: false })} color="secondary">
                         Disagree
                     </Button>
-                    <Button color="primary" autoFocus onClick={() => this.uploadImage()}>
+                    <Button color="secondary" autoFocus onClick={() => this.uploadImage()}>
                         Agree
                     </Button>
                     </DialogActions>
@@ -94,10 +95,10 @@ class ProfilePicture extends Component {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => this.setState({ openDelete: false })} color="primary">
+                        <Button onClick={() => this.setState({ openDelete: false })} color="secondary">
                             Disagree
                         </Button>
-                        <Button color="primary" autoFocus onClick={() => this.removeImage()}>
+                        <Button color="secondary" autoFocus onClick={() => this.removeImage()}>
                             Agree
                         </Button>
                     </DialogActions>
