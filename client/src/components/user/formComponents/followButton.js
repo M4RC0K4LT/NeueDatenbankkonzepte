@@ -32,6 +32,7 @@ class FollowButton extends Component {
 
     componentDidMount(){
         var { watchedid } = this.props;
+        this.state.userdata = this.socket.emit("getUserData", watchedid);
         this.socket.emit("isfollowing", watchedid);
         this.socket.on("isfollowingReturn", (bool => {
             if(bool == true){
@@ -55,7 +56,7 @@ class FollowButton extends Component {
                 onClick={this.handleClick}
                 style={{background: this.state.color, width: this.state.width, fontSize: this.state.fontSize, color: this.state.fontColor}}
             >
-                {follow ? 'Unfollow' + ' User ' + this.props.watchedid : 'Follow' + ' User ' + this.props.watchedid}
+                {follow ? 'Unfollow' + ' User ' + this.state.userdata.username : 'Follow' + ' User ' + this.props.watchedid}
             </Button>
         )
     }

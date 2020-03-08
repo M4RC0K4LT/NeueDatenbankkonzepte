@@ -141,7 +141,7 @@ class ShowFollowedUsers extends Component {
             return(<Redirect to={"/profile/" + this.state.selected}></Redirect>)
         }
         return (
-            <Container className={classes.onlineFriends}>
+            <Container className={classes.onlineFriends} style={{ display: this.state.allfriends.length==0 ? "none" : "block" }}>
                 <Typography variant="h6">Following</Typography><br/>
                 <List>
                     {this.state.allfriends.map((value, i) => {

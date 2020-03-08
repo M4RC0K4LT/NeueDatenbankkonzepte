@@ -89,7 +89,7 @@ class PersonalFeedPosts extends Component {
     if((response.length === 0 || response == null || typeof response != "object") && (loading == false)){
       showposts = (
         <div>
-          <Typography variant="h4"align="center">Sorry - Your friends are boring :/</Typography>
+          <Typography variant="h4"align="center">Sorry - Your friends has not posted anything yet :/</Typography>
           <br></br>
           <Typography variant="subtitle1" align="center">Your followed users did not post anything yet!</Typography>
           <Typography variant="h6" align="center">{error}</Typography>
