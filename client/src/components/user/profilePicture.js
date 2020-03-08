@@ -18,6 +18,7 @@ class ProfilePicture extends Component {
             open: false,
             message: "",
             snackcolor: "error",
+            imageHash: Date.now()
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -32,6 +33,7 @@ class ProfilePicture extends Component {
             if(data.length<1 || data.request === "failed"){
                 this.setState({ snackcolor: "error", message: data.error, open: true })
             }else {
+                let that = this;
                 this.setState({ snackcolor: "success", message: "Successfully updated profile picture!", open: true, openUpload: false })
             }
         })
@@ -58,7 +60,7 @@ class ProfilePicture extends Component {
         return (
             <div style={{ position: "relative" }}>
                 {settings}
-                <Avatar className={classes.ProfileAvatar} src={window.$apiroute + "/profilePics/user_" + userid + ".png"}></Avatar>
+                <Avatar className={classes.ProfileAvatar} src={`${window.$apiroute + "/profilePics/user_" + userid + ".png?"}?${new Date().getTime()}`}></Avatar>
                 <Dialog
                     open={this.state.openUpload}
                     onClose={() => this.setState({ openUpload: false })}
