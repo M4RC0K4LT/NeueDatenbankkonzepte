@@ -23,6 +23,7 @@ The client web app should now be available at `http://localhost`.
 ## Additional information
 
 Github: https://github.com/M4RC0K4LT/NeueDatenbankkonzepte
+
 Live Demo: https://kaltenstadler.net/newdb/
 
 Demo account:
