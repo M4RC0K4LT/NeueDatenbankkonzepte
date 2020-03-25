@@ -1,9 +1,18 @@
+/**
+ * A module that interacts with Redis Database on transactions regarding postdata.
+ * @module database/posts
+ */
+
+
 /** Import Database */
 const db = require('./redis');
+
+/** Import NPM Modules to detect hashtags */
 var linkify = require('linkifyjs');
 require('linkifyjs/plugins/hashtag')(linkify);
 var linkifyHtml = require('linkifyjs/html');
 
+/** Import NPM Module to detect umlauts and change them */
 var latinize = require('latinize');
 latinize.characters['Ä'] = 'Ae';
 latinize.characters['Ö'] = 'Oe';
@@ -15,6 +24,10 @@ latinize.characters['ö'] = 'oe';
 
 module.exports = {
 
+    /**
+     * Return all global posts.
+     * @param {socket} socket Requesting socket.
+     */
     async getAll(socket){
         let postJsonStrings = await db.zrangeAsync(individualPath + 'post', 0, -1, "WITHSCORES");
         let previousPosts = [];
@@ -33,6 +46,11 @@ module.exports = {
         socket.emit('previous posts', previousPosts);      
     },
 
+    /**
+     * Return posts written by one user.
+     * @param {string} id Watched userID
+     * @param {socket} socket Requesting socket.
+     */
     async getByUser(id, socket){
         let postJsons = await db.zrangeAsync(individualPath + 'postByUserID:' + id, 0, -1)
         let previousPosts = [];
@@ -51,6 +69,11 @@ module.exports = {
         socket.emit('previous posts', previousPosts); 
     },
 
+    /**
+     * Return posts included watches hashtag.
+     * @param {string} hashtag Watched hashtag
+     * @param {socket} socket Requesting socket.
+     */
     async getByHashtag(hashtag, socket){
         let postIDs = await db.zrangeAsync(individualPath + "hashtag:" + hashtag, 0, -1);
         let used = await db.zscore(individualPath + "hashtags", hashtag);
@@ -71,6 +94,10 @@ module.exports = {
         socket.emit('previous posts', previousPosts);  
     },
 
+    /**
+     * Get all used hashtags -> used for search.
+     * @return {Array} All hashtags. 
+     */
     async getAllHashtags(){
         let hashtags = await db.zrangeAsync(individualPath + "hashtags", 0, -1)
         let allhashtags = [];
@@ -81,12 +108,22 @@ module.exports = {
         return allhashtags;
     },
 
+    /**
+     * Get 10 most used hashtags.
+     * @param {socket} socket - Requesting socket.
+     */
     async getMostUsedHashtags(socket){
-        let mostHashtags = await db.zrangeAsync(individualPath + "hashtags", 0, 10, "WITHSCORES");
+        let mostHashtags = await db.zrevrangeAsync(individualPath + "hashtags", 0, 9, "WITHSCORES");
         socket.emit("hashtagstats", mostHashtags);
         socket.broadcast.emit("hashtagstats", mostHashtags);
     },
 
+    /**
+     * Write a new post.
+     * @param {JSON} jsonObject - Post related data.
+     * @param {socket} socket - Requesting socket.
+     * @param {io} io - All other socket connections.
+     */
     async create(jsonObject, socket, io){
         let now = Date.now();
         let pic = jsonObject.picture;    
@@ -113,6 +150,14 @@ module.exports = {
         io.sockets.in(socket.decoded.id).emit('post', JSON.stringify(newpost));
     },
 
+    /**
+     * Write a new private message.
+     * @param {string} sender - Sending User.
+     * @param {string} friend - User who should receive message.
+     * @param {string} message - Message content.
+     * @param {socket} socket - Requesting socket.
+     * @param {io} io - All other socket connections.
+     */
     async createPrivatePost(sender, friend, message, io, otheruserinchat) {
         let smaller_userid = null;
         let higher_userid = null;
@@ -134,11 +179,22 @@ module.exports = {
         io.sockets.in("private-" + smaller_userid + "-" + higher_userid).emit("post", JSON.stringify({"sender": sender, "message": message, "timestamp": now}))
     },
 
+    /**
+     * Set private chat as read -> after clicking on it.
+     * @param {string} friend - Chat with this user.
+     * @param {socket} socket - Requesting socket.
+     */
     async setPrivateMessagesRead(friend, socket){
         await db.sremAsync(individualPath + "UserChatsUnread:" + socket.decoded.id, friend)
         socket.emit("newmessageread", friend);
     },
 
+    /**
+     * Get all previous private chat messages.
+     * @param {string} requestingid - Requesting userID.
+     * @param {string} friend - Requested chatID.
+     * @param {socket} socket - Requesting socket.
+     */
     async getPreviousPrivatePosts(requestingid, friend, socket){
         let smaller_userid = null;
         let higher_userid = null;
@@ -163,6 +219,11 @@ module.exports = {
 
     },
 
+    /**
+     * Get all previous posts of personal feed.
+     * @param {string} user - Requesting userID.
+     * @param {socket} socket - Requesting socket.
+     */
     async getPersonalFeed(user, socket){
         var oldposts = [];
         var users_following = await db.smembersAsync(individualPath + "following:" + user)
@@ -172,7 +233,7 @@ module.exports = {
                 oldposts.push(postid);
             }
         }
-        var sorted_postIDs = oldposts.sort();
+        var sorted_postIDs = oldposts.sort((a, b) => a - b);
         let previousPosts = [];
         for(postid of sorted_postIDs){
             var post = await db.hgetallAsync(individualPath + "post:" + postid)
@@ -188,6 +249,11 @@ module.exports = {
         
     },
 
+    /**
+     * Like specific post.
+     * @param {string} postid - Liked postID.
+     * @param {string} userid - Liking userID.
+     */
     likePost(postid, userid){
         db.sadd(individualPath + 'PostLikes:' + postid, userid, function(err, res){
             if(err){
@@ -206,6 +272,11 @@ module.exports = {
         })
     },
 
+    /**
+     * Un-Like specific post.
+     * @param {string} postid - Un-Liked postID.
+     * @param {string} userid - Un-Liking userID.
+     */
     removePostLike(postid, userid){
         db.srem(individualPath + 'PostLikes:' + postid, userid, function(err, res){
             if(err){

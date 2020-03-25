@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import { PersonalFeedPosts, useStyles } from '../components/exports';
 import { Backdrop, CircularProgress, withStyles, Typography } from '@material-ui/core';
 
-class GlobalFeed extends Component {
+/** Central PersonalFeed Component contains all needed child components */
+class PersonalFeed extends Component {
 
+    //Initialize state variables
     constructor() {
         super();
         this.state = {
@@ -27,4 +29,9 @@ class GlobalFeed extends Component {
     }
 }
 
-export default withStyles(useStyles) (GlobalFeed);
+/**
+ * Displays posts of followed users.
+ * @param {props} props - Given properties of mother component (styling,...).
+ * @return {Component} - PersonalFeed Component
+ */
+export default withStyles(useStyles) (PersonalFeed);

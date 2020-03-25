@@ -116,10 +116,6 @@ const useStyles = theme => ({
         backgroundColor: green[500],
         justifyContent: "center"
     },
-    backdrop: {
-        zIndex: theme.zIndex.drawer + 1,
-        color: '#fff',
-    },
     cssLabel: {
         color: "white"
       },

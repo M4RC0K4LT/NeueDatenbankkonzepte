@@ -1,23 +1,23 @@
 import React from 'react';
-import { Route, Switch, withRouter } from 'react-router-dom'
-import ReactDOM from 'react-dom'
-import GlobalFeed from "./main/GlobalFeed"
-import { ResponsiveDrawer, PrivateRoute, ShowFollowedUsers, ShowRecentHashtags } from './components/exports'
+import { Route, Switch, withRouter } from 'react-router-dom';
 import { Grid, Hidden, Box } from '@material-ui/core';
-import Login from './main/login';
-import Register from './main/register';
-import Profile from './main/profile';
-import PersonalFeed from './main/PersonalFeed';
-import PrivateChat from './main/privateChat';
-import HashtagFeed from './main/HashtagFeed';
-import HashtagsStats from './main/HashtagStats';
+import { ResponsiveDrawer, PrivateRoute, ShowFollowedUsers, ShowRecentHashtags } from '../components/exports';
+import GlobalFeed from "./GlobalFeed";
+import Login from './login';
+import Register from './register';
+import Profile from './profile';
+import PersonalFeed from './PersonalFeed';
+import PrivateChat from './privateChat';
+import HashtagFeed from './HashtagFeed';
+import HashtagsStats from './HashtagStats';
 
+/** Where not to show the sidebars */
 const exclusionArray = [
     '/login',
     '/register',
-    '/private'
 ]
 
+/** FollowedUsers/Friends and top-5 hashtags sidebar */
 const Friends = () => (
     <Hidden mdDown>
         <Grid item xs={2} style={{ marginLeft: "100px" }}>      
@@ -29,6 +29,7 @@ const Friends = () => (
     </Hidden>
 )
 
+/** Currently not in use - just as placeholder */
 const News = () => (
     <Hidden mdDown>
         <Grid item xs={2} style={{ marginRight: "100px" }}>
@@ -37,6 +38,7 @@ const News = () => (
     </Hidden>
 )
 
+/** Main Application with included React-Router */
 const App = ({location}) => (
 
         <ResponsiveDrawer
@@ -48,8 +50,8 @@ const App = ({location}) => (
                     justify="center"
                     spacing={1}
                 >
-                    {exclusionArray.join().includes(location.pathname) == false && <News/>}
-                    <Grid item xs={7} lg={4}>  
+                    {exclusionArray.join().includes(location.pathname) === false && <News/>}
+                    <Grid item xs={7} lg={4}>
                         <Switch>
                             <Route exact path="/login" component={Login} />
                             <Route exact path="/register" component={Register} />
@@ -61,9 +63,10 @@ const App = ({location}) => (
                             <PrivateRoute path="/private/:id" component={PrivateChat} />
                             <PrivateRoute exact path="/hashtags" component={HashtagsStats} />
                             <PrivateRoute path="/hashtags/:tag" component={HashtagFeed} />
+                            <PrivateRoute path="/following" component={ShowFollowedUsers} />
                         </Switch>
                     </Grid>
-                    {exclusionArray.join().includes(location.pathname) == false && <Friends/>}
+                    {exclusionArray.join().includes(location.pathname) === false && <Friends/>}
                 </Grid>
             }
             loc={location.pathname}>

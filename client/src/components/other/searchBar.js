@@ -1,9 +1,10 @@
 import React from 'react';
+import { useHistory } from "react-router-dom";
 import {CircularProgress, TextField, withStyles} from '@material-ui/core/';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { useHistory } from "react-router-dom";
 import useStyles from './useStyles';
 
+/** Displays a SearchBar to search for users and hastags */
 function Asynchronous(props) {
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
@@ -107,4 +108,8 @@ function Asynchronous(props) {
     );
 }
 
+/**
+ * Defines the SearchBar.
+ * @return {Component} - SearchBar
+ */
 export default withStyles(useStyles) (Asynchronous);

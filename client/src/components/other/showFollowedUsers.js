@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
+import {  Redirect, Link } from 'react-router-dom';
 import { List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemSecondaryAction, withStyles, Badge, Container, IconButton, Typography } from '@material-ui/core';
-import { useStyles, SocketContext } from '../exports'
 import { Chat as ChatIcon } from '@material-ui/icons';
-import {  Redirect, useHistory, Link } from 'react-router-dom';
-import socket from '../other/SocketContext';
+import { useStyles, SocketContext } from '../exports'
 
+//Styling of green dot next to profilePicture to show that user is online
 const StyledBadge = withStyles(theme => ({
     badge: {
       backgroundColor: '#44b700',
@@ -34,8 +34,10 @@ const StyledBadge = withStyles(theme => ({
     },
 }))(Badge);
 
+/** ShowFollowedUsers Component to provide a sidebar with all followed users */
 class ShowFollowedUsers extends Component {
 
+    //Initialize state values and socket
     constructor(props){
         super(props);
         this.state = {
@@ -44,22 +46,21 @@ class ShowFollowedUsers extends Component {
             selected: null,
         };  
         this.socket = SocketContext;
-    }   
-
-    handleClick(value){
-        let path = `/profile/` + value.toString();
-        let history = useHistory();
-        history.push(path);
     }
     
+    //Start socket listeners
     componentDidMount(){
-        socket.emit("getMyFriends");
+        this.socket.emit("getMyFriends");
 
         this.socket.on("returnFriend", (rawData => {
             let { allfriends } = this.state;
-            var previous = allfriends;
-            var newfriend = JSON.parse(rawData);
-            previous.unshift(newfriend)
+            let previous = allfriends;
+            let newfriend = JSON.parse(rawData);
+            if(newfriend.id==="-1"){
+                previous.push(newfriend)
+            }else {
+                previous.unshift(newfriend)
+            }
             this.setState({ allfriends: previous });
         }))
 
@@ -67,7 +68,7 @@ class ShowFollowedUsers extends Component {
             let { allfriends } = this.state;
             let todelete = null;
             for (var i = 0; i < allfriends.length; i++) {
-                if(allfriends[i].id == id){
+                if(allfriends[i].id === id){
                   todelete = i;
                   break
                 }
@@ -79,7 +80,7 @@ class ShowFollowedUsers extends Component {
         this.socket.on("goesonline", (rawData => {
             let { allfriends } = this.state;
             for (var i = 0; i < allfriends.length; i++) {
-                if(allfriends[i].id == rawData){
+                if(allfriends[i].id === rawData){
                   allfriends[i].online = 1;
                   this.setState({ allfriends });
                   break
@@ -90,7 +91,7 @@ class ShowFollowedUsers extends Component {
         this.socket.on("goesoffline", (rawData => {
             let { allfriends } = this.state;
             for (var i = 0; i < allfriends.length; i++) {
-                if(allfriends[i].id == rawData){
+                if(allfriends[i].id === rawData){
                   allfriends[i].online = 0;
                   this.setState({ allfriends });
                   break
@@ -101,7 +102,7 @@ class ShowFollowedUsers extends Component {
         this.socket.on("newmessageread", (id => {
             let { allfriends } = this.state;
             for (var i = 0; i < allfriends.length; i++) {
-                if(allfriends[i].id == id){
+                if(allfriends[i].id === id){
                   allfriends[i].newmessage = 0;
                   this.setState({ allfriends });
                   break
@@ -112,7 +113,7 @@ class ShowFollowedUsers extends Component {
         this.socket.on("newmessage", (id => {
             let { allfriends } = this.state;
             for (var i = 0; i < allfriends.length; i++) {
-                if(allfriends[i].id == id){
+                if(allfriends[i].id === id){
                   allfriends[i].newmessage = 1;
                   this.setState({ allfriends });
                   break
@@ -125,6 +126,7 @@ class ShowFollowedUsers extends Component {
           });
     }
 
+    //Stop socket listeners
     componentWillUnmount(){
         this.socket.off("returnFriend");
         this.socket.off("removeFriend")
@@ -141,7 +143,7 @@ class ShowFollowedUsers extends Component {
             return(<Redirect to={"/profile/" + this.state.selected}></Redirect>)
         }
         return (
-            <Container className={classes.onlineFriends} style={{ display: this.state.allfriends.length==0 ? "none" : "block" }}>
+            <Container className={classes.onlineFriends} style={{ display: this.state.allfriends.length===0 ? "none" : "block" }}>
                 <Typography variant="h6">Following</Typography><br/>
                 <List>
                     {this.state.allfriends.map((value, i) => {
@@ -163,7 +165,7 @@ class ShowFollowedUsers extends Component {
                             <ListItemText id={value.id} primary={value.username} />
                             <ListItemSecondaryAction>
                                 <IconButton component={Link} to={"/private/" + value.id}>
-                                <Badge variant="dot" color="secondary" invisible={value.newmessage == 1 ? false : true}>
+                                <Badge variant="dot" color="secondary" invisible={value.newmessage === 1 ? false : true}>
                                     <ChatIcon></ChatIcon>
                                 </Badge>
                                 </IconButton>
@@ -178,9 +180,9 @@ class ShowFollowedUsers extends Component {
 }
 
 /**
- * Defines the RegisterUserForm Component.
- * Displays form for the registration of a new user.
+ * Defines the ShowFollowedUsers Component.
+ * Displays a sidebar with followed users
  * @param {props} props - Given properties of mother component (styling,...).
- * @return {Component} - RegisterUserForm Component
+ * @return {Component} - ShowFollowedUsers Component
  */
 export default withStyles(useStyles) (ShowFollowedUsers);

@@ -1,9 +1,16 @@
+/**
+ * A module that initializes the socket and all its listeners
+ * @module routes/sockets
+ */
+
+/** Database interaction */
 const posts = require('../database/posts');
 const user = require('../database/users');
 const socketauth = require("../routes/auth");
 
 module.exports = {
 
+    /** Initialize Socktet */
     initializeSockets(http){
 
         const io = require('socket.io')(http);
@@ -136,6 +143,11 @@ module.exports = {
             /** Listener to requeset if user folllows another */
             socket.on("isfollowing", (id) => {
                 user.isfollowing(socket.decoded.id, id, socket)
+            })
+
+            /** Listener to requeset if user folllows another */
+            socket.on("isfollowingme", (id) => {
+                user.isfollowing(id, socket.decoded.id, socket)
             })
     
             /** Returns all user-specific data found on profile */

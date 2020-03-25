@@ -2,12 +2,12 @@ import React, { Component } from "react";
 import { Container, withStyles, Typography, Grid, Paper, Backdrop, CircularProgress } from '@material-ui/core';
 import { useStyles, ProfileFeed, FollowButton, SocketContext, ProfilePicture } from '../components/exports';
 
-
-
 var jwtDecode = require('jwt-decode');
 
+/** Display the Profile Component/Page with all its single components */
 class Profile extends Component {
 
+    //Initialize state values and socket
     constructor(props) {
         super(props);
         let token = sessionStorage.getItem("authToken");
@@ -21,6 +21,7 @@ class Profile extends Component {
         this.socket = SocketContext;
     }
 
+    //Start socket listeners
     componentDidMount() {
         let id = this.props.match.params.id;
         if(id == null){
@@ -33,7 +34,7 @@ class Profile extends Component {
         })
         this.socket.on("addfollower", (id) => {
             const { userdata } = this.state;
-            if(userdata.id == id){
+            if(userdata.id === id){
                 userdata.followers = userdata.followers+1;
                 this.setState({ userdata: userdata });
             }
@@ -41,13 +42,14 @@ class Profile extends Component {
         })
         this.socket.on("removefollower", (id) => {
             const { userdata } = this.state;
-            if(userdata.id == id){
+            if(userdata.id === id){
                 userdata.followers = userdata.followers-1;
                 this.setState({ userdata: userdata });
             }
         })
     }
 
+    //Stop socket listeners on page update with different data
     componentDidUpdate(prevProps) {
         if (this.props.match.params.id !== prevProps.match.params.id) {
             this.socket.off("getUserDataReturn");
@@ -57,6 +59,7 @@ class Profile extends Component {
         }
     }
 
+    //Stop socket listener
     componentWillUnmount(){
         this.socket.off("getUserDataReturn");
         this.socket.off("addfollower")
@@ -65,18 +68,17 @@ class Profile extends Component {
 
     render() {
 
-        const { classes } = this.props;
-
         let userid = this.props.match.params.id
 
         let followbutton = null;
         let own = true;
-        if ((userid != null) && (userid != this.state.myid) && (this.state.userdata.request != "failed")) {
+        if ((userid !== undefined) && (userid !== this.state.myid) && (this.state.userdata.request !== "failed")) {
             own = false;
             followbutton = (
                 <FollowButton
                     myid={this.state.myid}
                     watchedid={userid}
+                    uname={this.state.userdata.username}
                 >
                 </FollowButton>
             )
@@ -124,4 +126,10 @@ class Profile extends Component {
     }
 }
 
+/**
+ * Defines the Profile Component.
+ * Displays Profile Page with ProfilePic, Followers, Feed.
+ * @param {props} props - Given properties of mother component (styling,...).
+ * @return {Component} - Profile Component
+ */
 export default withStyles(useStyles)(Profile);

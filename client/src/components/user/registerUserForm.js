@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Button, withStyles, Backdrop, CircularProgress } from '@material-ui/core';
 import { useStyles, RegisterFields, SnackbarMessage } from '../exports'
 import { postNewUser } from "../../api/exports";
-import { Redirect } from 'react-router-dom';
 
 /** RegisterUserForm Component to provide a form for registering new users */
 class RegisterUserForm extends Component {
@@ -64,7 +63,7 @@ class RegisterUserForm extends Component {
     render() {
         
         const { classes } = this.props;
-        const { username, password, confirmpassword, disablefields, success, openLoading, open } = this.state;
+        const { username, password, confirmpassword, disablefields, success, openLoading } = this.state;
 
         //Check if already logged in
         if (sessionStorage.getItem("authToken") != null){

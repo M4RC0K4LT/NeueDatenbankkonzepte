@@ -4,9 +4,10 @@ import { TextField, Button, withStyles, InputAdornment} from '@material-ui/core'
 import { Image as ImageIcon } from '@material-ui/icons';
 import PostPicture from './postPicture'
 
-
-
+/** NewCommentForm Component to provide a TextField for creating a new post */
 class NewCommentForm extends Component {
+
+    //Initialize state values and socket
     constructor() {
         super();
         this.state = {
@@ -22,17 +23,18 @@ class NewCommentForm extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+    //Handle input changes
     handleChange(event) {
         this.setState({ newpost: event.target.value });
     }
 
+    //Handle post submit
     handleSubmit(event) {
         event.preventDefault();
-        if (this.state.newpost.length == 0) {
+        if (this.state.newpost.length === 0) {
             this.setState({ error: true });
             return;
         }
-
         this.socket.emit('new globalpost', JSON.stringify({ content: this.state.newpost, picture: this.state.filename }));
         this.setState({ error: false, newpost: "", filename: "", picture_included: false });
     }
@@ -73,4 +75,10 @@ class NewCommentForm extends Component {
     }
 }
 
+/**
+ * Defines the NewCommentForm Component.
+ * Displays a textfield to write and submit a new post.
+ * @param {props} props - Given properties of mother component (styling,...).
+ * @return {Component} - NewCommentForm Component
+ */
 export default withStyles(useStyles) (NewCommentForm);

@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 
 /** Individual database path as prefix of all entries */
-individualPath = "gruppe-kann-nix-57-";
+individualPath = "gruppe-kann-nix-63-";
 
 /** Cors options */
 const cors = require('cors')

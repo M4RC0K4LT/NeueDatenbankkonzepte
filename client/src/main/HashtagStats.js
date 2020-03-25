@@ -3,6 +3,7 @@ import { Typography, TableContainer, Table, TableBody, TableRow, TableCell } fro
 import { SocketContext } from "../components/exports";
 import { Link } from "react-router-dom";
 
+/** HashtagStats Component which displays 10 most used hastags with live counter */
 class HashtagStats extends Component {
     constructor() {
         super();
@@ -21,7 +22,7 @@ class HashtagStats extends Component {
                   result.push(array.slice(index, index + 2));
                 return result;
             }, []);
-            this.setState({ response: newlist.reverse() });
+            this.setState({ response: newlist });
         }));
     }
 
@@ -62,4 +63,9 @@ class HashtagStats extends Component {
     }
 }
 
+/**
+ * Defines the HashtagStats Component.
+ * Displays 10 most used hashtags.
+ * @return {Component} - HashtagStats Component
+ */
 export default HashtagStats;

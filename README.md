@@ -1,14 +1,6 @@
-# Example Project for "New Database Concepts"
+# Project for "New Database Concepts" at DHBW Heidenheim - Group 18
 
-This is an example project for the course "New Database Concepts" at [Baden-Wuerttemberg Cooperative State University (DHBW)](https://www.heidenheim.dhbw.de/).
-
-## Requirements
-
-Install the following requirements before using this project:
-
-- Node.js v12 or higher
-- Redis Server
-- Angular CLI (optional, but recommended) `npm i -g @angular/cli`
+This is a project for the course "New Database Concepts" at [Baden-Wuerttemberg Cooperative State University (DHBW)](https://www.heidenheim.dhbw.de/) created by Group18.
 
 ## Setup / Start Project
 
@@ -24,13 +16,15 @@ The server should now be available at `http://localhost:3000/`
 
 To setup the client, open the directory `/client` and run `npm install`.
 
-To start the client, run `npm start` (without Angular CLI) or `ng serve` (with Angular CLI).
+To start the client, run `npm start`.
 
-The client web app should now be available at `http://localhost:4200`.
+The client web app should now be available at `http://localhost`.
 
-## Reading Class
+## Additional information
 
-- [Angular CLI](https://cli.angular.io/)
-- [Socket.io](https://socket.io/get-started/chat/)
-- [Redis Node.js Client](https://www.npmjs.com/package/redis)
-- [Redis Commands](https://redis.io/commands)
+Live Demo: https://kaltenstadler.net/newdb/
+
+Demo account:
+- User: Obama
+- Password: 123
+

@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import { GlobalFeedPosts, NewCommentForm, useStyles } from '../components/exports';
 import { Box, Backdrop, CircularProgress, withStyles } from '@material-ui/core';
 
+/** GlobalFeed Component to show all public posts */
 class GlobalFeed extends Component {
 
+  //Initialize state value
   constructor() {
     super();
     this.state = {
@@ -27,4 +29,9 @@ class GlobalFeed extends Component {
   }
 }
 
+/**
+ * Defines the GlobalFeed Component which displays all public posts.
+ * @param {props} props - Given properties of mother component (styling,...).
+ * @return {Component} - ShowRecentHashtags Component
+ */
 export default withStyles(useStyles) (GlobalFeed);

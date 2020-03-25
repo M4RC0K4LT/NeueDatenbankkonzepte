@@ -52,7 +52,7 @@ class SnackbarMessage extends Component {
 }
 
 /**
- * Protected Routes (Client Side).
+ * Main Snackbar Component - Handling.
  * @param {props} props - Properties given from mother element: open, onClose, message, color
  * @return {Snackbar} Show suitable snackbar.
  */

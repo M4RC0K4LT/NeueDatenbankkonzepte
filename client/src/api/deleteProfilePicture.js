@@ -1,7 +1,5 @@
 /** 
- * Function to request Express Backend and return JSON - Send follow request
- * @param {string} actingUser User´s ID.
- * @param {string} watchedUser Watched User´s ID.
+ * Function to request Express Backend to delete users`s profile picture
  * @returns {JSON} successful or not.
  */
 export default function deleteProfilePicture(){
@@ -13,6 +11,6 @@ export default function deleteProfilePicture(){
                 'Authorization': 'Bearer ' + sessionStorage.getItem("authToken")},
         })
         .then(response => response.json())
-        .catch(error => JSON.parse('{"request": "failed", "error":' + JSON.stringify( "Following: " + error.message) + '}'))
+        .catch(error => JSON.parse('{"request": "failed", "error":' + JSON.stringify( "Delete ProfilePic: " + error.message) + '}'))
     )
 }
