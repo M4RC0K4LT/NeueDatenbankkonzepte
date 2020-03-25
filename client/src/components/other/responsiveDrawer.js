@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Typography, AppBar, CssBaseline, Drawer, Hidden, IconButton, Toolbar, useTheme, withStyles, List, ListItem, ListItemText, Button, createMuiTheme, MuiThemeProvider, Switch, Grid } from '@material-ui/core';
+import { Typography, AppBar, CssBaseline, Drawer, Hidden, IconButton, Toolbar, useTheme, withStyles, List, ListItem, ListItemText, createMuiTheme, MuiThemeProvider, Grid } from '@material-ui/core';
 import { MenuOutlined as MenuOutlinedIcon, Brightness2 as Brightness2Icon, Brightness7 as Brightness7Icon, ExitToApp as ExitToAppIcon } from '@material-ui/icons';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import useStyles from './useStyles';
 import { Link } from "react-router-dom";
 import Asynchronous from './searchBar'
 
-//Handle order delete
+//Handle session logout
 function handleLogout() {
     sessionStorage.removeItem("authToken")
     window.location.replace("/login")
@@ -23,6 +23,7 @@ function ResponsiveDrawer(props) {
         setMobileOpen(!mobileOpen);
     };
 
+    /** Sets darkmode preference */
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
     const [dark, setdark] = useState({ prefersDarkMode });
     const theme = 
@@ -32,7 +33,7 @@ function ResponsiveDrawer(props) {
             }});
 
 
-    /** Logout Button */
+    /** Logout Button and SearchBar */
     let logout = null;
     let searchbar = null;
     if (!(loc === "/login" || loc === "/register")) {
@@ -45,8 +46,6 @@ function ResponsiveDrawer(props) {
             <Asynchronous dark={dark}></Asynchronous>
         )
     }
-
-    
 
     let darkmode = <Brightness2Icon></Brightness2Icon>;
     if(dark){
@@ -121,30 +120,31 @@ function ResponsiveDrawer(props) {
                 >
                     <List>
                         <ListItem button key={1} component={Link} style={{ color: "inherit" }} to={"/feed"} >
-                            {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Feed"} />
                         </ListItem>
                     </List>
                     <List>
                         <ListItem button key={2} component={Link} style={{ color: "inherit" }} to={"/personal"} >
-                            {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Personal"} />
                         </ListItem>
                     </List>
                     <List>
                         <ListItem button key={3} component={Link} style={{ color: "inherit" }} to={"/hashtags"} >
-                            {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Tags"} />
                         </ListItem>
                     </List>
                     <List>
                         <ListItem button key={4} component={Link} style={{ color: "inherit" }} to={"/profile"} >
-                            {/**<ListItemIcon style={{ color: "#fff" }}></ListItemIcon>*/}
                             <ListItemText primary={"Profil"} />
                         </ListItem>
                     </List>
                     <List>
-                        <ListItem key={2}>
+                        <ListItem button key={5} component={Link} style={{ color: "inherit" }} to={"/following"} >
+                            <ListItemText primary={"Following"} />
+                        </ListItem>
+                    </List>
+                    <List>
+                        <ListItem key={6}>
                             {logout}
                         </ListItem>
                     </List>
@@ -152,8 +152,7 @@ function ResponsiveDrawer(props) {
 
             </nav>
 
-            {/** Website content next to drawer (passed as props) */}
-            
+            {/** Website content next to drawer (passed as props) */}        
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
                     {content}

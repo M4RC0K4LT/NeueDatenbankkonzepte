@@ -1,7 +1,6 @@
 /** 
- * Function to request Express Backend and return JSON - Send follow request
- * @param {string} actingUser User´s ID.
- * @param {string} watchedUser Watched User´s ID.
+ * Function to request Express Backend and return JSON - Change/Upload profile picture
+ * @param {FormData} img User´s new profile picture.
  * @returns {JSON} successful or not.
  */
 export default function postProfilePicture(img){
@@ -14,6 +13,6 @@ export default function postProfilePicture(img){
             body: img
         })
         .then(response => response.json())
-        .catch(error => JSON.parse('{"request": "failed", "error":' + JSON.stringify( "Following: " + error.message) + '}'))
+        .catch(error => JSON.parse('{"request": "failed", "error":' + JSON.stringify( "Upload ProfilePic: " + error.message) + '}'))
     )
 }

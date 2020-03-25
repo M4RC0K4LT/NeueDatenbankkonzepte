@@ -1,5 +1,5 @@
 /** 
- * Function to request Express Backend and return JSON - Send existing userdata -> Used on login
+ * Function to request Express Backend and return JSON - Send existing userdata -> Used for login
  * @param {string} mail User´s Mail.
  * @param {string} password User´s unhashed password.
  * @returns {JSON} Userdata with AuthToken.

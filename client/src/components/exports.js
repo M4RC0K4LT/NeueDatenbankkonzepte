@@ -12,13 +12,13 @@ import LoginUserForm from './user/loginUserForm';
 import RegisterUserForm from './user/registerUserForm';
 import ProfileFeed from './feed/profile_feed';
 import FollowButton from './user/formComponents/followButton';
-import ShowFollowedUsers from './user/showFollowedUsers';
+import ShowFollowedUsers from './other/showFollowedUsers';
 import NewPrivateMessage from './chat/newPrivateMessage';
 import FriendsChat from './chat/friendsChat';
 import SnackbarMessage from './other/snackbarmessage';
 import ProfilePicture from './user/profilePicture';
 import HashtagFeedPosts from './feed/hashtag_feed';
-import ShowRecentHashtags from './feed/showRecentHashtags';
+import ShowRecentHashtags from './other/showRecentHashtags';
 
 /** Central components-ExportFile */
 export {

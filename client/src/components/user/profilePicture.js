@@ -1,31 +1,29 @@
 import React, { Component } from 'react';
-import { Avatar, Button, withStyles, Input, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Badge } from '@material-ui/core';
+import { Avatar, Button, withStyles, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText } from '@material-ui/core';
 import { useStyles, SnackbarMessage } from '../exports'
 import { postProfilePicture, deleteProfilePicture } from '../../api/exports'
 import SettingsIcon from '@material-ui/icons/Settings';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-/** LoginUserForm Component displays form to log in existing user */
+/** ProfilePicture Component to handle all actions regarding a profile picture and displaying it */
 class ProfilePicture extends Component {
 
-    //Initializes TextField values and error handling
+    //Initializes state values
     constructor(props){
         super(props);
         this.state = {
             open: false,
             openUpload: false,
             openDelete: false,
-            open: false,
             message: "",
             snackcolor: "error",
             imageHash: Date.now()
         };
 
-        this.handleSubmit = this.handleSubmit.bind(this);
         this.uploadImage = this.uploadImage.bind(this);
     };
 
-
+    //Upload a new picture/image
     uploadImage () {
         var form = document.getElementById("myform");
         var formData = new FormData(form);
@@ -33,21 +31,16 @@ class ProfilePicture extends Component {
             if(data.length<1 || data.request === "failed"){
                 this.setState({ snackcolor: "error", message: data.error, open: true })
             }else {
-                let that = this;
                 this.setState({ snackcolor: "success", message: "Successfully updated profile picture!", open: true, openUpload: false })
             }
         })
     }
 
+    //Remove existing profile picture/image
     removeImage () {
         deleteProfilePicture();
         this.setState({ snackcolor: "success", message: "Successfully removed profile picture!", open: true, openDelete: false })
     }
-
-    //Submit provided login data
-    handleSubmit(event){ 
-        event.preventDefault();
-    };
 
     render() {
         
@@ -119,9 +112,9 @@ class ProfilePicture extends Component {
 }
 
 /**
- * Defines the LoginUserForm Component.
- * Displays Login Fields.
+ * Defines the ProfilePicture Component.
+ * Displays ProfilePicture and handles its changes.
  * @param {props} props - Given properties of mother component (styling,...).
- * @return {Component} - LoginUserForm Component
+ * @return {Component} - ProfilePicture Component
  */
 export default withStyles(useStyles) (ProfilePicture);

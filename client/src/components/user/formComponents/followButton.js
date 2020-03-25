@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { withStyles, Button } from '@material-ui/core';
 import { useStyles, SocketContext } from "../../exports";
-import { postFollow, postUnfollow, postIsFollowing, getUserInformation } from "../../../api/exports";
 
-/** LoginFields Component */
+/** FollowButton Component */
 class FollowButton extends Component {
     constructor(props){
         super(props);   
@@ -11,14 +10,13 @@ class FollowButton extends Component {
             follow: false,
             fontColor: "white",
             width: "100%",
-            userdata: {},
         };
         
         this.handleClick = this.handleClick.bind(this);
         this.socket = SocketContext;
     }
 
-    /** Change values (onKeyboardInput) of controlled TextField components */
+    /** Handle Click -> set follow/unfollow */
     handleClick() {
         var {  watchedid } = this.props;
         if(this.state.follow === false){
@@ -30,12 +28,12 @@ class FollowButton extends Component {
         }
     }
 
+    //Start socket listener
     componentDidMount(){
         var { watchedid } = this.props;
-        this.state.userdata = this.socket.emit("getUserData", watchedid);
         this.socket.emit("isfollowing", watchedid);
         this.socket.on("isfollowingReturn", (bool => {
-            if(bool == true){
+            if(bool === true){
                 this.setState({ follow: true, color: "darkred", fontSize: 16 })
             } else {
                 this.setState({ follow: false, color: "green", fontSize: 16 });
@@ -43,6 +41,7 @@ class FollowButton extends Component {
         }))
     }
 
+    //Stop socket listener
     componentWillUnmount(){
         this.socket.off("isfollowingReturn");
     }
@@ -56,16 +55,16 @@ class FollowButton extends Component {
                 onClick={this.handleClick}
                 style={{background: this.state.color, width: this.state.width, fontSize: this.state.fontSize, color: this.state.fontColor}}
             >
-                {follow ? 'Unfollow' + ' User ' + this.state.userdata.username : 'Follow' + ' User ' + this.props.watchedid}
+                {follow ? 'Unfollow User ' + this.props.uname : 'Follow User ' + this.props.uname}
             </Button>
         )
     }
 }
 
 /**
- * Defines the LoginFields Component.
- * Shows all Fields needed for UserLogin
+ * Defines the FollowButton Component.
+ * Shows big FollowButton to handle follow/unfollow
  * @param {props} props - Given properties of mother component (styling, TextField props,...)
- * @return {Component} - LoginFields Component
+ * @return {Component} - FollowButton Component
  */
 export default withStyles(useStyles) (FollowButton);

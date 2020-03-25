@@ -4,10 +4,10 @@ import { Button, withStyles, Dialog, DialogActions, DialogTitle, DialogContent, 
 import { useStyles, SnackbarMessage } from '../exports'
 import { postPostPicture } from '../../api/exports'
 
-/** LoginUserForm Component displays form to log in existing user */
+/** PostPicture Component provides upload dialog and handles picture/image upload for an upcoming post */
 class PostPicture extends Component {
 
-    //Initializes TextField values and error handling
+    //Initializes state values and error handling
     constructor(props){
         super(props);
         this.state = {
@@ -19,6 +19,7 @@ class PostPicture extends Component {
         
     }   
 
+    //Handles image/picture upload
     uploadImage () {
         var form = document.getElementById("myform");
         var formData = new FormData(form);
@@ -33,16 +34,16 @@ class PostPicture extends Component {
         })
     }
 
+    //On page updates
     componentDidUpdate(prevProps){
-        if(this.props.deleted != prevProps.deleted){
+        if(this.props.deleted !== prevProps.deleted){
             if(this.props.deleted){
                 this.setState({ snackcolor: "error", message: "Picture deleted", open: true })
             }
         }
     }
 
-    render() {
-        
+    render() {      
         return (
             <div>
                 <Dialog
@@ -79,9 +80,9 @@ class PostPicture extends Component {
 }
 
 /**
- * Defines the LoginUserForm Component.
- * Displays Login Fields.
+ * Defines the PostPicture Component.
+ * Displays dialog for uploading and handles picture/image upload regarding a new post
  * @param {props} props - Given properties of mother component (styling,...).
- * @return {Component} - LoginUserForm Component
+ * @return {Component} - PostPicture Component
  */
 export default withStyles(useStyles) (PostPicture);

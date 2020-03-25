@@ -1,8 +1,11 @@
 import React, { Component } from "react";
-import { Post, SocketContext, useStyles } from "../exports";
-import { Typography, Chip, List, ListItem, withStyles } from '@material-ui/core';
+import { SocketContext, useStyles } from "../exports";
+import { Typography, List, ListItem, withStyles } from '@material-ui/core';
 
+/** FriendsChat Component to provide private Chat between two users */
 class FriendsChat extends Component {
+
+  //Initializes state-values and sockets
   constructor() {
     super();
     this.state = {
@@ -15,8 +18,8 @@ class FriendsChat extends Component {
     this.messagesEndRef = React.createRef()
   }
 
+  //Start socket listener
   componentDidMount() { 
-
     this.props.startLoading();
     this.setState({ loading: true })
     this.socket.emit("join private", this.props.friendsid)
@@ -39,10 +42,12 @@ class FriendsChat extends Component {
     });
   }
 
+  //Scroll down to latest message
   scrollToBottom = () => {
     this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
   }
 
+  //Stop socket listeners on possible route change
   componentDidUpdate(prevProps){
     if (this.props.friendsid !== prevProps.friendsid) {
       this.socket.off("post");
@@ -55,6 +60,7 @@ class FriendsChat extends Component {
     }
   }
 
+  //Stop socket listener
   componentWillUnmount() {
     this.socket.off("post");
     this.socket.off("previous posts")
@@ -65,7 +71,7 @@ class FriendsChat extends Component {
     const { response, error, loading } = this.state;
     let showposts = null;
 
-    if((response.length === 0 || response == null || typeof response != "object") && (loading == false)){
+    if((response.length === 0 || response === null || typeof response != "object") && (loading === false)){
       showposts = (
         <div>
           <Typography variant="h" align="center">You haven't chated with that user yet</Typography>
@@ -74,6 +80,7 @@ class FriendsChat extends Component {
       )
     } else {
 
+      //Provide container without scrollbar
       showposts = (
         <div style={{ height: "600px", width: "100%", overflow: "hidden" }}>
           <List style={{ height: "100%", width: "100%", overflow: "auto", paddingRight: "18px", boxSizing: "content-box" }}>
@@ -93,4 +100,10 @@ class FriendsChat extends Component {
   }
 }
 
+/**
+ * Defines the FriendsChat Component.
+ * Displays private chat between two users
+ * @param {props} props - Given properties of mother component (styling,...).
+ * @return {Component} - FriendsChat Component
+ */
 export default withStyles(useStyles)(FriendsChat);

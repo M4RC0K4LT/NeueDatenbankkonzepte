@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { List, ListItem, ListItemText, ListItemSecondaryAction, withStyles, Container, Typography, ListItemIcon } from '@material-ui/core';
+import {  Redirect, Link } from 'react-router-dom';
+import { List, ListItem, ListItemText, withStyles, Container, Typography, ListItemIcon } from '@material-ui/core';
 import { useStyles, SocketContext } from '../exports'
-import {  Redirect, useHistory, Link } from 'react-router-dom';
 
+/** ShowRecentHashtags Component to provide a sidebar with top-5 hashtags */
 class ShowRecentHashtags extends Component {
 
+    //Initialize state values and socket
     constructor(props){
         super(props);
         this.state = {
@@ -12,13 +14,8 @@ class ShowRecentHashtags extends Component {
         };  
         this.socket = SocketContext;
     }   
-
-    handleClick(value){
-        let path = `/profile/` + value.toString();
-        let history = useHistory();
-        history.push(path);
-    }
     
+    //Start socket listener
     componentDidMount(){
         this.socket.emit("get hashtagstats");
 
@@ -28,10 +25,11 @@ class ShowRecentHashtags extends Component {
                   result.push(array.slice(index, index + 2));
                 return result;
             }, []);
-            this.setState({ recentTags: newlist.reverse().slice(0, 5) });
+            this.setState({ recentTags: newlist.slice(0, 5) });
         }));
     }
 
+    //Stop socket listener
     componentWillUnmount(){
         this.socket.off("hashtagstats");
     }
@@ -61,9 +59,9 @@ class ShowRecentHashtags extends Component {
 }
 
 /**
- * Defines the RegisterUserForm Component.
- * Displays form for the registration of a new user.
+ * Defines the ShowRecentHashtags Component.
+ * Displays a sidebar with top-5 hashtags.
  * @param {props} props - Given properties of mother component (styling,...).
- * @return {Component} - RegisterUserForm Component
+ * @return {Component} - ShowRecentHashtags Component
  */
 export default withStyles(useStyles) (ShowRecentHashtags);

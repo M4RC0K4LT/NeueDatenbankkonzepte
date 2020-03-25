@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import { useStyles, NewPrivateMessage, FriendsChat } from '../components/exports';
 import { Typography, withStyles, Backdrop, CircularProgress } from '@material-ui/core';
 
+/** Displays the PrivateChat page with all its components */
 class PrivateChat extends Component {
 
+    //Initialize state values and socket
     constructor(props){
         super(props);
         this.state = {
@@ -35,4 +37,10 @@ class PrivateChat extends Component {
     }
 }
 
+/**
+ * Defines the PrivateChat Component.
+ * Displays private chat with a single user.
+ * @param {props} props - Given properties of mother component (styling,...).
+ * @return {Component} - PrivateChat Component
+ */
 export default withStyles(useStyles) (PrivateChat);

@@ -121,11 +121,12 @@ router.post('/register', async function(request, response) {
     }
 });
 
-/** POST: Register new User */
+/** POST: Searching for users and hashtags */
 router.get('/search', async function(request, response) {
         const user = await users.getAll();  
         const post = await posts.getAllHashtags();  
         return response.status(200).send(JSON.stringify(user.concat(post)));
 });
+
 
 module.exports = router;

@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import { Post, SocketContext, useStyles } from "../exports";
-import { Typography, Backdrop, CircularProgress, withStyles } from '@material-ui/core';
+import { Typography, withStyles } from '@material-ui/core';
 
+/** ProfileFeed Component to provide a user-related feed under user-profile */
 class ProfileFeed extends Component {
+
+  //Initialize state variables and socket
   constructor() {
     super();
     this.state = {
@@ -15,6 +18,19 @@ class ProfileFeed extends Component {
     this.handleLike = this.handleLike.bind(this);
   }
 
+  //Handle post like
+  handleLike(id, number) {
+    let { response } = this.state;
+    if(response[number].liked){
+      this.socket.emit("removelike", id);
+    }else{
+      this.socket.emit("like", id);
+    }
+    response[number].liked = !response[number].liked;
+    this.setState({ response }); 
+  }
+
+  //Start socket listeners
   componentDidMount() {
     
     var userid = this.props.id;
@@ -44,7 +60,7 @@ class ProfileFeed extends Component {
     this.socket.on("newlike", (postid) => {
       let { response } = this.state;
       for (var i = 0; i < response.length; i++) {
-        if(response[i].postid == postid){
+        if(response[i].postid === postid){
           response[i].likes = parseInt(response[i].likes)+1;
           this.setState({ response });
           break
@@ -55,7 +71,7 @@ class ProfileFeed extends Component {
     this.socket.on("removelike", (postid) => {
       let { response } = this.state;
       for (var i = 0; i < response.length; i++) {
-        if(response[i].postid == postid){
+        if(response[i].postid === postid){
           response[i].likes = parseInt(response[i].likes)-1;
           this.setState({ response });
           break
@@ -64,17 +80,7 @@ class ProfileFeed extends Component {
     }) 
   }
 
-  handleLike(id, number) {
-    let { response } = this.state;
-    if(response[number].liked){
-      this.socket.emit("removelike", id);
-    }else{
-      this.socket.emit("like", id);
-    }
-    response[number].liked = !response[number].liked;
-    this.setState({ response }); 
-  }
-
+  //Stop socket listeners on site update with different data
   componentDidUpdate(prevProps) {
     if (this.props.id !== prevProps.id) {
       this.socket.off("post");
@@ -85,6 +91,7 @@ class ProfileFeed extends Component {
     }
   }
 
+  //Stop socket listeners
   componentWillUnmount(){
     this.socket.off("post");
     this.socket.off("previous posts")
@@ -99,7 +106,7 @@ class ProfileFeed extends Component {
     const { response, error, loading } = this.state;
     let showposts = null;
     
-    if((response.length === 0 || response == null || typeof response != "object") && (loading == false)){
+    if((response.length === 0 || response === null || typeof response != "object") && (loading === false)){
       showposts = (
         <div>
           <Typography variant="h4"align="center">Sorry - This user has no posts :/</Typography>
@@ -133,4 +140,10 @@ class ProfileFeed extends Component {
   }
 }
 
+/**
+ * Defines the ProfileFeed Component.
+ * Displays user´s feed under his profile
+ * @param {props} props - Given properties of mother component (styling,...).
+ * @return {Component} - ProfileFeed Component
+ */
 export default withStyles(useStyles) (ProfileFeed);

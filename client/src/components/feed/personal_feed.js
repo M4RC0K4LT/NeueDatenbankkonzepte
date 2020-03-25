@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import { Post, SocketContext } from "../exports";
-import { Typography, Backdrop, CircularProgress } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 
+/** PersonalFeedPosts Component to provide a feed of followed users` posts */
 class PersonalFeedPosts extends Component {
+
+  //Initialize state variables and socket
   constructor() {
     super();
     this.state = {
@@ -15,6 +18,7 @@ class PersonalFeedPosts extends Component {
     this.handleLike = this.handleLike.bind(this);
   }
 
+  //Handle post like
   handleLike(id, number) {
     let { response } = this.state;
     if(response[number].liked){
@@ -26,6 +30,7 @@ class PersonalFeedPosts extends Component {
     this.setState({ response }); 
   }
 
+  //Start socket listeners
   componentDidMount() {
     
     this.props.startLoading();
@@ -53,7 +58,7 @@ class PersonalFeedPosts extends Component {
     this.socket.on("newlike", (postid) => {
       let { response } = this.state;
       for (var i = 0; i < response.length; i++) {
-        if(response[i].postid == postid){
+        if(response[i].postid === postid){
           response[i].likes = parseInt(response[i].likes)+1;
           this.setState({ response });
           break
@@ -64,7 +69,7 @@ class PersonalFeedPosts extends Component {
     this.socket.on("removelike", (postid) => {
       let { response } = this.state;
       for (var i = 0; i < response.length; i++) {
-        if(response[i].postid == postid){
+        if(response[i].postid === postid){
           response[i].likes = parseInt(response[i].likes)-1;
           this.setState({ response });
           break
@@ -73,12 +78,13 @@ class PersonalFeedPosts extends Component {
     }) 
   }
 
+  //Stop socket listeners
   componentWillUnmount(){
     this.socket.off("post");
     this.socket.off("previous posts")
     this.socket.off("newlike");
     this.socket.off("removelike")
-    this.socket.emit("leave", "personal");
+    this.socket.emit("leave", "followers");
     this.socket.emit("leave", "friends");
   }
 
@@ -86,7 +92,7 @@ class PersonalFeedPosts extends Component {
     const { response, error, loading } = this.state;
     let showposts = null;
     
-    if((response.length === 0 || response == null || typeof response != "object") && (loading == false)){
+    if((response.length === 0 || response === null || typeof response != "object") && (loading === false)){
       showposts = (
         <div>
           <Typography variant="h4"align="center">Sorry - Your friends has not posted anything yet :/</Typography>
@@ -120,4 +126,10 @@ class PersonalFeedPosts extends Component {
   }
 }
 
+/**
+ * Defines the PersonalFeedPosts Component.
+ * Displays posts of followed users
+ * @param {props} props - Given properties of mother component (styling,...).
+ * @return {Component} - PersonalFeedPosts Component
+ */
 export default PersonalFeedPosts;

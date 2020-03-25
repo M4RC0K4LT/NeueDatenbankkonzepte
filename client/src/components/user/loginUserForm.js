@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button, withStyles, Backdrop, CircularProgress } from '@material-ui/core';
 import { useStyles, LoginFields, SnackbarMessage } from '../exports'
 import { postUser } from "../../api/exports";

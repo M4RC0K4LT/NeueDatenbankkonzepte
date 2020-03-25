@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { HashtagFeedPosts, useStyles } from '../components/exports';
 import { Typography, Backdrop, CircularProgress, withStyles } from '@material-ui/core';
 
-class GlobalFeed extends Component {
+/** HashtagFeed Component to display all posts belonging to selected hashtag */
+class HashtagFeed extends Component {
 
     constructor() {
         super();
@@ -25,4 +26,10 @@ class GlobalFeed extends Component {
     }
 }
 
-export default withStyles(useStyles) (GlobalFeed);
+/**
+ * Defines the HashtagFeed Component.
+ * Displays all posts belonging to selected hashtag.
+ * @param {props} props - Given properties of mother component (styling,...).
+ * @return {Component} - HashtagFeed Component
+ */
+export default withStyles(useStyles) (HashtagFeed);

@@ -1,7 +1,7 @@
 const redis = require('redis');
 const bluebird = require('bluebird')
 
-// Possibility to make Async request to redis database 
+// Possibility to make Async requests to redis database 
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 

@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import { Post, SocketContext, useStyles } from "../exports";
 import { Typography, withStyles } from '@material-ui/core';
 
+/** GlobalFeedPosts Component to provide a feed of all public posts */
 class GlobalFeedPosts extends Component {
+
+  //Initialize state variables and socket
   constructor() {
     super();
     this.state = {
@@ -14,6 +17,19 @@ class GlobalFeedPosts extends Component {
     this.socket = SocketContext;
   }
 
+  //Handle post like
+  handleLike(id, number) {
+    let { response } = this.state;
+    if(response[number].liked){
+      this.socket.emit("removelike", id);
+    }else{
+      this.socket.emit("like", id);
+    }
+    response[number].liked = !response[number].liked;
+    this.setState({ response }); 
+  }
+
+  //Start socket listeners
   componentDidMount() {
    
     this.socket.emit("join", "global")
@@ -42,7 +58,7 @@ class GlobalFeedPosts extends Component {
     this.socket.on("newlike", (postid) => {
       let { response } = this.state;
       for (var i = 0; i < response.length; i++) {
-        if(response[i].postid == postid){
+        if(response[i].postid === postid){
           response[i].likes = parseInt(response[i].likes)+1;
           this.setState({ response });
           break
@@ -53,7 +69,7 @@ class GlobalFeedPosts extends Component {
     this.socket.on("removelike", (postid) => {
       let { response } = this.state;
       for (var i = 0; i < response.length; i++) {
-        if(response[i].postid == postid){
+        if(response[i].postid === postid){
           response[i].likes = parseInt(response[i].likes)-1;
           this.setState({ response });
           break
@@ -62,17 +78,7 @@ class GlobalFeedPosts extends Component {
     }) 
   }
 
-  handleLike(id, number) {
-    let { response } = this.state;
-    if(response[number].liked){
-      this.socket.emit("removelike", id);
-    }else{
-      this.socket.emit("like", id);
-    }
-    response[number].liked = !response[number].liked;
-    this.setState({ response }); 
-  }
-
+  //Stop socket listeners
   componentWillUnmount(){
     this.socket.off("post");
     this.socket.off("previous posts")
@@ -85,7 +91,7 @@ class GlobalFeedPosts extends Component {
     const { response, error, loading } = this.state;
     let showposts = null;
     
-    if((response.length === 0 || response == null || typeof response != "object") && (loading == false)){
+    if((response.length === 0 || response === null || typeof response != "object") && (loading === false)){
       showposts = (
         <div>
           <Typography variant="h3" align="center">All posts for you</Typography>
@@ -125,4 +131,11 @@ class GlobalFeedPosts extends Component {
   }
 }
 
+/**
+ * 
+ * Defines the GlobalFeedPosts Component.
+ * Displays all public posts
+ * @param {props} props - Given properties of mother component (styling,...).
+ * @return {Component} - GlobalFeedPosts Component
+ */
 export default withStyles(useStyles) (GlobalFeedPosts);
