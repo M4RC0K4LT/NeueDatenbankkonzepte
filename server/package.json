@@ -20,7 +20,7 @@
     "linkifyjs": "^2.1.9",
     "multer": "^1.4.2",
     "node-static": "^0.7.11",
-    "redis": "^2.8.0",
+    "redis": "^3.1.1",
     "socket.io": "^2.3.0",
     "uuid": "^3.4.0"
   }
